@@ -1,0 +1,32 @@
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import { notFound } from "next/navigation";
+import { connection } from "next/server";
+import { getByResultsToken } from "@/lib/db";
+import { buildShowcaseData, withResolvedReviewImages } from "@/lib/showcase";
+import { Showcase } from "@/components/showcase/Showcase";
+import { StatusView } from "@/components/status/StatusView";
+
+export const metadata: Metadata = {
+  title: "Your results — Arkko",
+  robots: { index: false, follow: false },
+  referrer: "no-referrer",
+};
+
+async function Results({ params }: { params: Promise<{ token: string }> }) {
+  await connection();
+  const { token } = await params;
+  const rec = await getByResultsToken(token);
+  if (!rec || rec.status === "draft") notFound();
+  // Until results exist, the results link shows the request's status instead.
+  if (!rec.results?.length) return <StatusView rec={withResolvedReviewImages(rec)} token={token} />;
+  return <Showcase data={buildShowcaseData(rec)} />;
+}
+
+export default function Page({ params }: PageProps<"/r/[token]">) {
+  return (
+    <Suspense fallback={<div className="grid min-h-screen place-items-center text-sm text-muted">Loading…</div>}>
+      <Results params={params} />
+    </Suspense>
+  );
+}

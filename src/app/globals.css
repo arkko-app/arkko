@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --surface-2: #f2f0ea;
+  --line: #e6e2d8;
+  --line-strong: #d6d1c4;
+  --ink: #1d2a27;
+  --ink-2: #4b5653;
+  --muted: #7a8380;
+  --brand: #1f5148;
+  --brand-hover: #173f38;
+  --brand-ink: #ffffff;
+  --brand-soft: #e2ebe7;
+  --brand-text: #1f5a4f;
+  --accent-soft: #f8efdb;
+  --accent-line: #e7d4a4;
+  --accent-dot: #d4a12f;
+  --accent-text: #6b5419;
+  --chip: #ecebe4;
+  --danger: #a23a2a;
+  --danger-soft: #fbece8;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-text: var(--brand-text);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-line: var(--accent-line);
+  --color-accent-dot: var(--accent-dot);
+  --color-accent-text: var(--accent-text);
+  --color-chip: var(--chip);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: var(--font-dm-sans);
+  --font-serif: var(--font-source-serif);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.link-arrow {
+  @apply inline-flex items-center gap-1 text-[13px] font-semibold text-brand-text hover:underline underline-offset-4;
+}
+
+/* In the base layer so utilities like `outline-none` can override it (unlayered CSS beats every layer). */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}

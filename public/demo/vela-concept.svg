@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" role="img" aria-label="Illustrative concept can">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3dcb8"/><stop offset="1" stop-color="#e9b98a"/>
+    </linearGradient>
+    <linearGradient id="can" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f2c94c"/><stop offset=".35" stop-color="#f6e27a"/>
+      <stop offset=".62" stop-color="#f4a3b4"/><stop offset="1" stop-color="#e2729a"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#9aa0a6"/><stop offset=".5" stop-color="#eef0f2"/><stop offset="1" stop-color="#8d939a"/>
+    </linearGradient>
+    <radialGradient id="grape" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#ffd0b8"/><stop offset=".7" stop-color="#f2735a"/><stop offset="1" stop-color="#e2553f"/>
+    </radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
+  </defs>
+  <rect width="1200" height="680" fill="url(#bg)"/>
+  <!-- leaf shadows -->
+  <g fill="#7a5233" opacity=".22" filter="url(#soft)">
+    <path d="M60 120 C180 40 300 60 360 160 C260 170 160 190 60 120Z"/>
+    <path d="M120 300 C220 220 330 240 380 330 C290 340 200 360 120 300Z"/>
+    <path d="M820 40 C940 -20 1060 10 1100 110 C1000 110 900 120 820 40Z"/>
+    <path d="M900 420 C1000 360 1120 380 1160 470 C1060 480 970 490 900 420Z"/>
+  </g>
+  <g fill="#3c6b3a">
+    <path d="M40 520 C120 430 230 440 280 520 C200 560 110 570 40 520Z" opacity=".9"/>
+    <path d="M60 600 C150 540 250 560 300 630 C210 660 120 660 60 600Z" opacity=".75"/>
+    <path d="M150 40 C210 0 290 20 320 80 C250 100 190 90 150 40Z" opacity=".8"/>
+  </g>
+  <!-- splash -->
+  <g fill="#f6b26b" opacity=".85">
+    <path d="M420 300 C470 200 560 170 600 210 C560 230 520 280 500 340Z"/>
+    <path d="M780 260 C830 180 900 170 930 220 C880 230 840 270 820 320Z"/>
+    <path d="M440 520 C500 560 560 580 620 560 C580 600 500 610 450 580Z"/>
+  </g>
+  <g fill="#fff" opacity=".8">
+    <circle cx="430" cy="220" r="9"/><circle cx="470" cy="160" r="6"/><circle cx="905" cy="170" r="8"/>
+    <circle cx="960" cy="260" r="5"/><circle cx="400" cy="420" r="7"/><circle cx="880" cy="520" r="10"/>
+    <circle cx="520" cy="110" r="4"/><circle cx="990" cy="380" r="6"/><circle cx="360" cy="330" r="5"/>
+  </g>
+  <!-- can -->
+  <g transform="rotate(-18 660 360)">
+    <rect x="555" y="70" width="210" height="580" rx="34" fill="url(#can)"/>
+    <rect x="555" y="70" width="210" height="34" rx="16" fill="url(#rim)"/>
+    <rect x="555" y="620" width="210" height="30" rx="14" fill="url(#rim)"/>
+    <rect x="600" y="100" width="40" height="520" fill="url(#shine)"/>
+    <text x="0" y="0" transform="translate(705 600) rotate(-90)" font-family="Georgia, serif" font-weight="700" font-size="128" fill="#2b1d2a" letter-spacing="4">ARKKO</text>
+    <text x="0" y="0" transform="translate(745 560) rotate(-90)" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="18" fill="#2b1d2a" letter-spacing="3">FUNCTIONAL CITRUS-BOTANICAL</text>
+    <circle cx="620" cy="250" r="44" fill="url(#grape)" stroke="#fff3e6" stroke-width="6"/>
+    <path d="M620 210 L620 290 M580 250 L660 250 M592 222 L648 278 M648 222 L592 278" stroke="#fff3e6" stroke-width="3"/>
+    <path d="M600 330 C600 300 640 300 640 330 C640 370 620 390 620 390 C620 390 600 370 600 330Z" fill="#d63a3a"/>
+    <path d="M605 300 L620 290 L635 300" stroke="#3c6b3a" stroke-width="6" fill="none"/>
+  </g>
+  <!-- fruit -->
+  <circle cx="300" cy="610" r="120" fill="url(#grape)" stroke="#fff3e6" stroke-width="10"/>
+  <g stroke="#fff3e6" stroke-width="5"><path d="M300 490V730M180 610H420M215 525L385 695M385 525L215 695"/></g>
+  <circle cx="1040" cy="560" r="95" fill="url(#grape)" stroke="#fff3e6" stroke-width="9"/>
+  <g stroke="#fff3e6" stroke-width="4"><path d="M1040 465V655M945 560H1135M973 493L1107 627M1107 493L973 627"/></g>
+  <!-- stickers -->
+  <g transform="rotate(-14 150 70)">
+    <ellipse cx="150" cy="70" rx="160" ry="82" fill="#2b1d2a"/>
+    <text x="150" y="62" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="40" fill="#f6e9d8">ARKKO</text>
+    <text x="150" y="100" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="22" fill="#f6e9d8" letter-spacing="2">BOTANICALS</text>
+  </g>
+  <g transform="rotate(12 1140 90)">
+    <ellipse cx="1140" cy="90" rx="110" ry="78" fill="#d9483b"/>
+    <text x="1140" y="80" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="34" fill="#2b1d2a">BITTER</text>
+    <text x="1140" y="118" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="34" fill="#2b1d2a">&amp; BRIGHT</text>
+  </g>
+  <g transform="rotate(-8 1130 420)">
+    <ellipse cx="1130" cy="420" rx="105" ry="74" fill="#d9483b"/>
+    <text x="1130" y="410" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="32" fill="#2b1d2a">BITTER</text>
+    <text x="1130" y="446" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="32" fill="#2b1d2a">&amp; BRIGHT</text>
+  </g>
+</svg>
