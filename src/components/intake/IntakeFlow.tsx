@@ -10,7 +10,7 @@ import { ChatBrief, type ChatState } from "./ChatBrief";
 
 const STORAGE_KEY = "arkko:intake:v2";
 const MAX_IMAGES = 6;
-const MAX_BYTES = 10 * 1024 * 1024;
+const MAX_BYTES = 4 * 1024 * 1024; // keep in step with uploadRules.maxBytes
 const TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 type Step = 0 | 1 | 2 | 3;
@@ -211,7 +211,7 @@ export function IntakeFlow({ aiChat }: { aiChat: boolean }) {
     const items: UploadItem[] = picked.map((file) => {
       const base = { localId: crypto.randomUUID(), name: file.name, size: file.size, progress: 0, file };
       if (!TYPES.includes(file.type)) return { ...base, state: "error", error: "Use JPEG, PNG, WebP or GIF" };
-      if (file.size > MAX_BYTES) return { ...base, state: "error", error: "Larger than 10 MB" };
+      if (file.size > MAX_BYTES) return { ...base, state: "error", error: "Larger than 4 MB" };
       return { ...base, state: "uploading", preview: URL.createObjectURL(file) };
     });
     setUploads((list) => [...list, ...items]);
@@ -519,7 +519,7 @@ export function IntakeFlow({ aiChat }: { aiChat: boolean }) {
                 Add anything visual.
               </h1>
               <p className="mt-2 text-[16px] text-ink-2">
-                Optional. Packaging, moodboards, shelf photos, sketches. Up to {MAX_IMAGES} images, 10 MB each (JPEG, PNG, WebP, GIF).
+                Optional. Packaging, moodboards, shelf photos, sketches. Up to {MAX_IMAGES} images, 4 MB each (JPEG, PNG, WebP, GIF).
               </p>
 
               <div

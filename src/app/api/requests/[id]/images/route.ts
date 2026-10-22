@@ -23,7 +23,7 @@ export async function POST(req: Request, ctx: RouteContext<"/api/requests/[id]/i
   if (!(file instanceof File)) return fail(400, "No file received");
   if (!uploadRules.types.includes(file.type))
     return fail(415, "Use a JPEG, PNG, WebP or GIF image");
-  if (file.size > uploadRules.maxBytes) return fail(413, "Images must be 10 MB or smaller");
+  if (file.size > uploadRules.maxBytes) return fail(413, "Images must be 4 MB or smaller");
 
   const imageId = newId("img");
   const name = `${imageId}.${EXT[file.type]}`;

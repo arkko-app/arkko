@@ -30,7 +30,7 @@ Copy and intake questions live in `src/content/site.ts`. You can replace them wi
 | `ARKKO_SIGNING_SECRET` | Signs file URLs and webhook bodies | dev value |
 | `OTTO_API_KEY` | Bearer token for `/api/otto/*` | `dev-otto-key` |
 | `OTTO_WEBHOOK_URL` | Optional. If set, new requests are pushed here | unset → Otto pulls |
-| `ARKKO_DATA_DIR` | Where records and files are stored | `.data/` |
+| `ARKKO_DATA_DIR` | Where records and files are stored | `.data/` (`/tmp/arkko` on Vercel) |
 | `ANTHROPIC_API_KEY` | Claude API key for the intake chat (`/api/intake/chat`) | unset → chat unavailable, form still works |
 
 ### Intake chat
@@ -69,10 +69,14 @@ The token needs `data.records:read`, `data.records:write`, `schema.bases:read` a
 The two demo requests are added automatically the first time the app talks to an empty base.
 
 Link tokens are stored as a SHA-256 hash (for lookups) and AES-encrypted with `ARKKO_SIGNING_SECRET`, so people with
-access to the base can't open request pages. Keep that secret stable: changing it makes stored requests unreadable.
+access to the base can't open request pages. Keep that secret stable: changing it makes stored requests unreadable. To change it anyway, update it everywhere (local and
+Vercel) and then run `OLD_SIGNING_SECRET=<previous> node --env-file=.env.local scripts/airtable-rotate-secret.mjs`
+(`--dry-run` first) to re-encrypt the stored tokens.
 Hide the encrypted token columns in your Airtable views.
 
 File bytes are also kept on local disk; on a fresh server, files are served from the Airtable attachment instead.
+Images are limited to 4 MB, under both Vercel's 4.5 MB request limit and Airtable's 5 MB upload limit, so every image
+has an Airtable copy. On Vercel the disk is temporary, so Airtable storage is required there.
 Airtable allows about 5 requests per second per base; the store retries when throttled.
 
 ## How a request moves

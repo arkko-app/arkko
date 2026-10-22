@@ -25,7 +25,7 @@ How to talk:
 
 Finishing:
 - Once you have the brand and the goal, and have asked about the optional fields (or the user wants to wrap up), call propose_brief. Say one short sentence before the call, such as "Here's what I've got."
-- Write each field in clear English, in the user's own terms, as full sentences where it helps. Use an empty string for anything not discussed.
+- Write each field in clear English, in the user's own terms, as full sentences where it helps. The brand field is just the name (for example "Chai Co"); put any other details in the relevant field. Use an empty string for anything not discussed.
 - If the user replies instead of confirming, take their changes into account and call propose_brief again when ready.`;
 
 export const proposeBriefTool: Anthropic.Beta.BetaTool = {
@@ -69,3 +69,21 @@ export const chatBody = z.object({
 });
 
 export const MAX_BODY_CHARS = 300_000;
+
+/**
+ * Messages one visitor (by IP) may send per hour. A brief takes about 6–10.
+ * Kept in memory, so it is per server instance: a guard against runaway use, not a hard cap.
+ * Set a monthly spend limit in the Claude Console for that.
+ */
+const RATE = { limit: 40, windowMs: 60 * 60 * 1000 };
+const hits = new Map<string, number[]>();
+
+export function allowChatMessage(ip: string) {
+  const now = Date.now();
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < RATE.windowMs);
+  if (recent.length >= RATE.limit) return false;
+  recent.push(now);
+  hits.set(ip, recent);
+  if (hits.size > 10_000) hits.clear();
+  return true;
+}

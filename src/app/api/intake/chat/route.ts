@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { config } from "@/lib/config";
 import { fail } from "@/lib/http";
 import { cleanAnswers } from "@/lib/intake";
-import { CHAT_MODEL, CHAT_SYSTEM, MAX_BODY_CHARS, briefInput, chatBody, proposeBriefTool } from "@/lib/chat";
+import { CHAT_MODEL, CHAT_SYSTEM, MAX_BODY_CHARS, allowChatMessage, briefInput, chatBody, proposeBriefTool } from "@/lib/chat";
 
 type Param = Anthropic.Beta.BetaMessageParam;
 
@@ -28,6 +28,8 @@ export async function POST(req: Request) {
     console.error("intake chat: ANTHROPIC_API_KEY is not set");
     return fail(503, "Chat isn't available right now. Please use the form.");
   }
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "local";
+  if (!allowChatMessage(ip)) return fail(429, "You've sent a lot of messages. Please take a break, or use the form.");
   const client = new Anthropic();
 
   // If the last turn proposed a brief and the user replied instead of confirming, answer the tool call first.

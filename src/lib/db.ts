@@ -27,8 +27,7 @@ export const updateRequestAndNotify: Store["updateRequestAndNotify"] = (id, muta
 export const listNotifications = () => store.listNotifications();
 export const ackNotification = (id: string) => store.ackNotification(id);
 
-const DATA_DIR = process.env.ARKKO_DATA_DIR ?? path.join(process.cwd(), ".data");
-export const FILES_DIR = path.join(DATA_DIR, "files");
+export const FILES_DIR = path.join(config.dataDir, "files");
 
 export function localFilePath(requestId: string, name: string) {
   if (name.includes("/") || name.includes("..") || requestId.includes("/") || requestId.includes(".."))

@@ -1,6 +1,7 @@
 import "server-only";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { config } from "../config";
 import type { OttoNotification, RequestRecord } from "../types";
 import { newId, now } from "../ids";
 import { seedRecords } from "../seed";
@@ -8,7 +9,7 @@ import type { Store } from "./types";
 
 /** Local JSON store for development: records in .data/db.json. */
 
-const DATA_DIR = process.env.ARKKO_DATA_DIR ?? path.join(process.cwd(), ".data");
+const DATA_DIR = config.dataDir;
 const DB_FILE = path.join(DATA_DIR, "db.json");
 
 interface DB {

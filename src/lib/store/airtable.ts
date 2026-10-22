@@ -358,8 +358,7 @@ async function persist(loaded: Loaded, before: RequestRecord, after: RequestReco
 async function attach(requestId: string, rowId: string, f: StoredFile) {
   if (f.size > MAX_ATTACHMENT_BYTES) return;
   try {
-    const dataDir = process.env.ARKKO_DATA_DIR ?? path.join(process.cwd(), ".data");
-    const bytes = await fs.readFile(path.join(dataDir, "files", requestId, f.name));
+    const bytes = await fs.readFile(path.join(config.dataDir, "files", requestId, f.name));
     await call(`${CONTENT_API}/${config.airtable!.baseId}/${rowId}/Attachment/uploadAttachment`, {
       method: "POST",
       body: JSON.stringify({ contentType: f.contentType, file: bytes.toString("base64"), filename: f.originalName || f.name }),
