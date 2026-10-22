@@ -54,11 +54,19 @@ type Row = { id: string; fields: Fields };
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function call<T = { records: Row[]; offset?: string }>(url: string, init: RequestInit = {}, attempt = 0): Promise<T> {
-  const res = await fetch(url, {
-    ...init,
-    headers: { Authorization: `Bearer ${config.airtable!.token}`, "content-type": "application/json" },
-    cache: "no-store",
-  });
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...init,
+      headers: { Authorization: `Bearer ${config.airtable!.token}`, "content-type": "application/json" },
+      cache: "no-store",
+    });
+  } catch (err) {
+    // Network drop. Reads and updates are safe to repeat; a create may have gone through, so it isn't retried.
+    if ((init.method ?? "GET") === "POST" || attempt >= 3) throw err;
+    await sleep(500 * 2 ** attempt);
+    return call(url, init, attempt + 1);
+  }
   // Airtable allows ~5 requests/second per base; back off and retry when throttled.
   if ((res.status === 429 || res.status >= 500) && attempt < 4) {
     await sleep(500 * 2 ** attempt);
