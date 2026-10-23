@@ -1,5 +1,5 @@
 import { fail, json } from "@/lib/http";
-import { cleanAnswers } from "@/lib/intake";
+import { cleanAnswers, cleanTranscript } from "@/lib/intake";
 import { insertRequest, newId, newToken, now } from "@/lib/db";
 
 /** Create a draft request. Repeating with the same idempotencyKey returns the same draft. */
@@ -19,6 +19,7 @@ export async function POST(req: Request) {
     createdAt: at,
     updatedAt: at,
     answers: cleanAnswers(body.answers),
+    chatTranscript: cleanTranscript(body.chatTranscript),
     images: [],
     assets: [],
     reviews: [],

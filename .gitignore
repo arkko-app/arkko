@@ -45,3 +45,6 @@ next-env.d.ts
 # Client-only material, kept out of the repo
 skills/
 *-SKILL.md
+
+# Otto engine run reports (client research)
+.otto-runs/

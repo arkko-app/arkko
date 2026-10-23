@@ -95,6 +95,8 @@ export interface RequestRecord {
   email?: string;
   emailRequestedAt?: string;
   answers: Record<string, string>;
+  /** The intake conversation as readable text ("Customer: …" / "Arkko: …"), when the brief came from the chat. */
+  chatTranscript?: string;
   images: StoredFile[];
   assets: StoredFile[]; // files uploaded by Otto (result images, PDF)
   reviews: Review[];

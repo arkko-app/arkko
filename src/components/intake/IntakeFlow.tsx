@@ -6,7 +6,7 @@ import { intakeFields, site } from "@/content/site";
 import { Icon, type IconName } from "../icons";
 import { Button, Logo, Spinner } from "../ui";
 import { CopyLink, readSavedRequests, rememberRequest, type SavedRequest } from "../status/actions";
-import { ChatBrief, type ChatState } from "./ChatBrief";
+import { ChatBrief, transcriptOf, type ChatState } from "./ChatBrief";
 
 const STORAGE_KEY = "arkko:intake:v2";
 const MAX_IMAGES = 6;
@@ -127,11 +127,12 @@ export function IntakeFlow({ aiChat }: { aiChat: boolean }) {
 
   /** Create the draft on first save, then keep its answers in sync. */
   async function saveDraft(cur: Saved): Promise<Saved> {
+    const chatTranscript = cur.chat?.history.length ? transcriptOf(cur.chat) : undefined;
     if (cur.id && cur.draftToken) {
       const res = await fetch(`/api/requests/${cur.id}`, {
         method: "PATCH",
         headers: { "content-type": "application/json", "x-draft-token": cur.draftToken },
-        body: JSON.stringify({ answers: cur.answers }),
+        body: JSON.stringify({ answers: cur.answers, chatTranscript }),
       });
       if (res.ok) return cur;
       if (res.status === 409) throw new Error("This brief was already submitted.");
@@ -143,7 +144,7 @@ export function IntakeFlow({ aiChat }: { aiChat: boolean }) {
     const res = await fetch("/api/requests", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ idempotencyKey: cur.key, answers: cur.answers }),
+      body: JSON.stringify({ idempotencyKey: cur.key, answers: cur.answers, chatTranscript }),
     });
     if (!res.ok) throw new Error("We couldn't save your answers. Please try again.");
     const { id, draftToken } = await res.json();

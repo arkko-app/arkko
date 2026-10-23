@@ -14,6 +14,8 @@ export function intakeForOtto(r: RequestRecord) {
     stage: currentStage(r),
     submittedAt: r.submittedAt,
     answers: r.answers,
+    /** The intake conversation, when the brief was given by chat (readable text), otherwise null. */
+    chatTranscript: r.chatTranscript ?? null,
     images: r.images.map((img) => ({
       id: img.id,
       originalName: img.originalName,

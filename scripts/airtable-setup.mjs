@@ -1,5 +1,6 @@
 /**
- * Creates the Arkko tables in an Airtable base. Safe to re-run: existing tables are skipped.
+ * Creates the Arkko tables in an Airtable base. Safe to re-run: existing tables are kept and
+ * only missing columns are added.
  *
  *   node --env-file=.env.local scripts/airtable-setup.mjs
  *
@@ -50,6 +51,7 @@ const TABLES = [
       long("Ideas"),
       long("Constraints"),
       long("Answers (JSON)", "All intake answers. Source of truth for the app."),
+      long("Chat transcript", "The intake conversation with Arkko, when the brief was given by chat."),
       { name: "Results email", type: "email" },
       date("Email requested at"),
       date("Submitted at"),
@@ -130,8 +132,16 @@ const { tables } = await api("/tables");
 const byName = new Map(tables.map((t) => [t.name, t]));
 
 for (const t of TABLES) {
-  if (byName.has(t.name)) {
-    console.log(`= ${t.name} already exists (${byName.get(t.name).id})`);
+  const existing = byName.get(t.name);
+  if (existing) {
+    console.log(`= ${t.name} already exists (${existing.id})`);
+    // Add columns introduced since the table was created.
+    const have = new Set(existing.fields.map((f) => f.name));
+    for (const field of t.fields(byName.get("Requests")?.id)) {
+      if (have.has(field.name)) continue;
+      await api(`/tables/${existing.id}/fields`, { method: "POST", body: JSON.stringify(field) });
+      console.log(`  + ${t.name}: added column "${field.name}"`);
+    }
     continue;
   }
   const created = await api("/tables", {

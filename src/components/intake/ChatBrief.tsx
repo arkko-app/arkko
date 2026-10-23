@@ -71,6 +71,14 @@ function textOf(m: Param): string {
     .trim();
 }
 
+/** The conversation as the customer saw it, greeting included, for saving with the request. */
+export function transcriptOf(chat: ChatState) {
+  return [
+    { from: "arkko" as const, text: site.intake.greeting },
+    ...chat.history.map((m) => ({ from: m.role === "user" ? ("customer" as const) : ("arkko" as const), text: textOf(m) })),
+  ].filter((l) => l.text);
+}
+
 export function ChatBrief({
   chat,
   ai,

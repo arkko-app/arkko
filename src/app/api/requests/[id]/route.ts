@@ -1,5 +1,5 @@
 import { fail, hasDraftAccess, json } from "@/lib/http";
-import { cleanAnswers } from "@/lib/intake";
+import { cleanAnswers, cleanTranscript } from "@/lib/intake";
 import { getRequest, updateRequest } from "@/lib/db";
 
 /** Save intake answers while the request is still a draft. */
@@ -11,6 +11,8 @@ export async function PATCH(req: Request, ctx: RouteContext<"/api/requests/[id]"
   const body = await req.json().catch(() => null);
   const updated = await updateRequest(id, (r) => {
     r.answers = cleanAnswers(body?.answers);
+    const transcript = cleanTranscript(body?.chatTranscript);
+    if (transcript) r.chatTranscript = transcript;
   });
   return json({ id, answers: updated?.answers });
 }
