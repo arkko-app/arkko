@@ -2,7 +2,7 @@
  * Otto research engine: runs the Arkko skill team on an approved concept and publishes the results.
  *
  *   node --env-file=.env.local scripts/otto-engine.mjs --request req_123     # one request, then exit
- *   node --env-file=.env.local scripts/otto-engine.mjs --watch               # run whenever a concept is approved
+ *   node --env-file=.env.local scripts/otto-engine.mjs --watch               # run on every new brief / approved concept
  *   ARKKO_URL=https://arkko-app.vercel.app node --env-file=.env.local scripts/otto-engine.mjs --watch
  *
  * Each skill file is the system prompt of a separate Claude call; the code runs the workflow the
@@ -146,17 +146,17 @@ function conceptText(req) {
     [v.title, v.summary, v.body, ...(v.highlights ?? []).map((h) => `${h.label}: ${h.value}`)].filter(Boolean).join("\n");
   return [
     `Project ID: ${req.id}`,
-    `Concept ID: ${concept.id} (version ${concept.version}, approved by the customer)`,
+    concept
+      ? `Concept ID: ${concept.id} (version ${concept.version}, approved by the customer)`
+      : `Concept ID: ${req.id}-c1 (version 1). The customer's own idea from the intake below; there was no separate idea or concept round.`,
     "",
     "Customer brief (USER_CONFIRMED, from the intake):",
     ...Object.entries(a)
       .filter(([, v]) => v)
       .map(([k, v]) => `- ${ANSWER_LABELS[k] ?? k}: ${v}`),
     ...(req.chatTranscript ? ["", "Intake conversation (the customer's own words, USER_CONFIRMED):", req.chatTranscript] : []),
-    "",
-    `Approved idea:\n${fmt(idea)}`,
-    "",
-    `Approved concept:\n${fmt(concept)}`,
+    ...(idea ? ["", `Approved idea:\n${fmt(idea)}`] : []),
+    ...(concept ? ["", `Approved concept:\n${fmt(concept)}`] : []),
     "",
     "Decision to support: whether this concept is attractive enough to take into consumer validation, and what to test first.",
   ].join("\n");
@@ -193,8 +193,8 @@ Fill the JSON fields:
 - projectTitle: a short title, at most 6 words (for example "Campus iced tea opportunity").
 - briefSummary: two or three sentences describing what the CUSTOMER asked for, in their terms, from the intake brief. Not the research or evaluation.
 - transformation: up to three pairs showing how the customer's starting point became the concept.
-- concept.who / when / promise: one short phrase each (at most 12 words), taken from the approved concept. concept.proposition: one or two sentences.
-- concept: from the approved concept. eyebrow "Your next growth opportunity". headline is a short line from the concept, not a claim of success.
+- concept.who / when / promise: one short phrase each (at most 12 words), taken from the approved concept, or from the customer's own idea in the intake when there is no separate concept. concept.proposition: one or two sentences.
+- concept: from the approved concept, or the customer's own idea when there is none; give it a short name (concept.name) that describes the product. eyebrow "Your next growth opportunity". headline is a short line from the concept, not a claim of success.
 - engines: exactly four entries (market /30, momentum /25, consumer /25, whitespace /20) using the evaluators' scores. Use null when the evaluator did not score the engine or any component was not scoreable. status is a short label such as "Provisional · Medium confidence" or "Not scored · evidence gap".
 - findings: the 6 most decision-relevant research findings; summary at most two sentences. kind "sourced" only when the finding cites at least one source id; specialist interpretations are "interpretation"; untested premises are "assumption". detail can be an empty string.
 - charts: only where the research reports comparable numeric values with a cited source (same unit, at least 2 points). Otherwise return an empty array. Never invent or estimate numbers. findingId links the chart to the finding it supports (or empty string).
@@ -240,7 +240,7 @@ async function runEngine(req) {
   log("Coordinator: writing the research brief…");
   const brief = await step("1-research-brief.md", async () =>
     agent("Coordinator · research brief", await skill("coordinator"),
-      `${concept}\n\nIntake is complete. Produce the common research brief (Section 7) with the three research assignments. Output the brief only.`));
+      `${concept}\n\nThe customer completed intake through Arkko's chat or form; the answers and conversation are above. Review them as your intake (Section 5): record each material field in the input ledger with its status, and note gaps as RESEARCH_QUESTION since the customer cannot be asked now. Then produce the short concept summary and the common research brief (Section 7) with the three research assignments. Output the summary and brief only.`));
 
   log("Researchers: market, consumer and feasibility in parallel (with web search)…");
   const assignment = (owner) => `Common research brief\n\n${brief.text}\n\nYou are ${owner}. Complete your assignment from this brief and return your research submission with source records (title, publisher, URL), evidence and inference records, and your contribution to the coverage matrix.`;
@@ -411,10 +411,17 @@ function toPayload(req, consolidated) {
 /* Entry points                                                         */
 /* ------------------------------------------------------------------ */
 
+/** Research runs on a brief with no idea/concept rounds, or once the concept is approved. */
+function ready(req) {
+  if (req.results?.length) return false;
+  if (!req.reviews.length) return true;
+  return latestOf(req, "concept")?.decision?.type === "approved";
+}
+
 async function runFor(id) {
   const { request: req } = await otto("GET", `/requests/${id}`);
-  const concept = latestOf(req, "concept");
-  if (concept?.decision?.type !== "approved") throw new Error(`${id}: the concept is not approved yet`);
+  if (!ready(req)) throw new Error(`${id}: not ready for research (needs a submitted brief, or an approved concept)`);
+  await otto("POST", `/requests/${id}/ack`).catch(() => {});
   await runEngine(req);
   log(`Usage: ${usage.input.toLocaleString()} input tokens, ${usage.output.toLocaleString()} output tokens, ${usage.searches} web searches`);
 }
@@ -427,9 +434,16 @@ if (one) {
     process.exitCode = 1;
   });
 } else if (process.argv.includes("--watch")) {
-  log(`Watching ${BASE} for approved concepts. Ctrl+C to stop.`);
+  // New briefs are picked up from the queue; --all also includes briefs submitted before the watch started.
+  const since = process.argv.includes("--all") ? "" : new Date().toISOString();
+  log(`Watching ${BASE} for new briefs and approved concepts${since ? " (from now on)" : " (including older briefs)"}. Ctrl+C to stop.`);
   for (;;) {
     try {
+      const { requests } = await otto("GET", "/requests");
+      for (const r of requests) {
+        if ((r.submittedAt ?? "") < since || r.reviews.length) continue;
+        await runFor(r.id).catch((err) => log(`Failed for ${r.id}: ${err.message}`));
+      }
       const { notifications } = await otto("GET", "/notifications");
       for (const n of notifications) {
         if (n.type !== "review.decided" || n.data.stage !== "concept" || n.data.decision !== "approved") continue;
@@ -442,5 +456,5 @@ if (one) {
     await new Promise((r) => setTimeout(r, 15_000));
   }
 } else {
-  console.log("Use --request <id> to run once, or --watch to run on every approved concept.");
+  console.log("Use --request <id> to run once, or --watch to run on every new brief and approved concept.");
 }

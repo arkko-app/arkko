@@ -34,6 +34,10 @@ const COPY: Record<string, { title: string; body: string }> = {
     title: "Concept approved. Research is underway.",
     body: "Otto is researching the opportunity. Your results page will be ready here when it's done.",
   },
+  "brief:research": {
+    title: "We're researching your brief.",
+    body: "Arkko's research team is looking into the market, consumers and feasibility, then scoring the opportunity. Your results page will be ready here when it's done.",
+  },
   "results:done": {
     title: "Your results are ready.",
     body: "Explore the concept, the evidence behind it, and what to test next.",
@@ -68,7 +72,10 @@ const STATE_LABEL: Record<string, string> = {
 
 export function StatusView({ rec, token }: { rec: RequestRecord; token: string }) {
   const stage = currentStage(rec);
-  const copy = COPY[`${stage.phase}:${stage.state}`];
+  // A brief researched directly, with no idea or concept rounds, skips those steps in the progress list.
+  const direct = rec.reviews.length === 0;
+  const phases = direct ? PHASES.filter((p) => p.id !== "idea" && p.id !== "concept") : PHASES;
+  const copy = COPY[direct && stage.phase === "research" ? "brief:research" : `${stage.phase}:${stage.state}`];
   const brand = rec.answers.brand ?? "Your brief";
   const statusPath = `/r/${token}/status`;
   const sent = rec.events.some((e) => e.type === "final_email_sent");
@@ -85,7 +92,7 @@ export function StatusView({ rec, token }: { rec: RequestRecord; token: string }
           <Logo />
         </div>
         <ol className="mt-10 space-y-1" aria-label="Progress">
-          {PHASES.map((p) => {
+          {phases.map((p) => {
             const st = phaseState(p.id, stage, rec);
             return (
               <li
@@ -315,8 +322,12 @@ function ProgressSummary({ rec }: { rec: RequestRecord }) {
   const concepts = reviewsFor(rec, "concept").length;
   const rows = [
     ["Submitted", rec.submittedAt ? fmtDate(rec.submittedAt).replace(/, \d+:\d+ [AP]M UTC$/, "") : "—"],
-    ["Idea versions", String(ideas)],
-    ["Concept versions", String(concepts)],
+    ...(rec.reviews.length
+      ? [
+          ["Idea versions", String(ideas)],
+          ["Concept versions", String(concepts)],
+        ]
+      : []),
   ];
   return (
     <dl className="rounded-2xl border border-line bg-surface p-5 text-sm">

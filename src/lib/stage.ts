@@ -35,6 +35,8 @@ function reviewState(r: Pick<RequestRecord, "reviews">, stage: ReviewStage): Sta
 /** Where a request is, derived only from what has actually been recorded. */
 export function currentStage(r: Pick<RequestRecord, "reviews" | "results">): Stage {
   if (r.results?.length) return { phase: "results", state: "done" };
+  // Without idea or concept versions, the brief goes straight to research (the coordinator turns it into the research brief).
+  if (!r.reviews.length) return { phase: "research", state: "developing" };
   if (!isApproved(r, "idea")) return reviewState(r, "idea");
   if (!isApproved(r, "concept")) return reviewState(r, "concept");
   return { phase: "research", state: "developing" };

@@ -703,7 +703,7 @@ function Confirmation({ s, onNew }: { s: Saved; onNew: () => void }) {
         Thanks. It’s with us.
       </h1>
       <p className="mt-2 text-[16px] text-ink-2">
-        Follow your request, and approve the idea and concept, on your request page.
+        Follow your request on your request page. Your results will appear there when the research is done.
       </p>
 
       <div className="mt-8 rounded-2xl border border-line bg-surface p-5 sm:p-6">
@@ -732,9 +732,9 @@ function Confirmation({ s, onNew }: { s: Saved; onNew: () => void }) {
         <div className="eyebrow text-ink-2">What happens next</div>
         <ol className="mt-4 space-y-4">
           {[
-            ["Idea", "Otto shapes a first idea and posts it to your request page. Approve it, or tell us what to change."],
-            ["Concept", "Once the idea is approved, you’ll review the developed concept the same way."],
-            ["Results", "After you approve the concept, Otto researches the opportunity. Your results appear on the same page."],
+            ["Research brief", "Arkko’s coordinator turns your brief into a research plan for the team."],
+            ["Research and scoring", "Specialists research the market, consumers and feasibility, then score the opportunity."],
+            ["Results", "Your results page, with sources, risks and what to test next, appears on your request page."],
           ].map(([t, b], i) => (
             <li key={t} className="flex gap-4">
               <span className="grid size-7 shrink-0 place-items-center rounded-full border border-line-strong text-xs font-semibold text-ink-2">{i + 1}</span>
