@@ -39,7 +39,12 @@ const T = {
 const ANSWER_COLUMNS: Record<string, string> = {
   brand: "Brand",
   goal: "Goal",
+  product: "Product",
   audience: "Audience",
+  occasion: "Occasion",
+  market: "Market",
+  channels: "Channels",
+  price: "Price",
   ideas: "Ideas",
   constraints: "Constraints",
 };

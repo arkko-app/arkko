@@ -124,6 +124,20 @@ async function agent(label, system, content, { search = false, format } = {}) {
 /* The workflow                                                         */
 /* ------------------------------------------------------------------ */
 
+// Intake field ids (src/content/site.ts) as the research team should read them.
+const ANSWER_LABELS = {
+  brand: "Brand or business",
+  goal: "Goal",
+  product: "Product and format",
+  audience: "Buyer and user",
+  occasion: "Occasion and what it replaces",
+  market: "Country or region",
+  channels: "Channels",
+  price: "Price and pack",
+  ideas: "Early ideas",
+  constraints: "Constraints",
+};
+
 function conceptText(req) {
   const a = req.answers ?? {};
   const idea = latestOf(req, "idea");
@@ -135,9 +149,9 @@ function conceptText(req) {
     `Concept ID: ${concept.id} (version ${concept.version}, approved by the customer)`,
     "",
     "Customer brief (USER_CONFIRMED, from the intake):",
-    ...[["Brand or business", a.brand], ["Goal", a.goal], ["Audience", a.audience], ["Early ideas", a.ideas], ["Constraints", a.constraints]]
+    ...Object.entries(a)
       .filter(([, v]) => v)
-      .map(([k, v]) => `- ${k}: ${v}`),
+      .map(([k, v]) => `- ${ANSWER_LABELS[k] ?? k}: ${v}`),
     ...(req.chatTranscript ? ["", "Intake conversation (the customer's own words, USER_CONFIRMED):", req.chatTranscript] : []),
     "",
     `Approved idea:\n${fmt(idea)}`,
