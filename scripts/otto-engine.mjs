@@ -170,14 +170,24 @@ const CONSOLIDATION_TASK = `Consolidate the research and evaluation returns abov
 Return ONLY one JSON object (no prose, no code fence) with this shape:
 ${RESULTS_SHAPE}
 
+This JSON is shown to the customer on a polished results page, so write for a business reader:
+- Plain English, short sentences, no markdown (no ** or bullet characters).
+- Never show internal IDs or codes (E001, S003, R001, MKE-G004, CCE-K002, A4, V1, PR5, packet or rubric versions), agent letters ("Agent A") or workflow states (UNRESOLVED, NO_MATERIAL_CONCERN_FOUND). Say "the market research", "the consumer research", "the feasibility research" or "the evaluators" instead, and "not yet known" instead of UNRESOLVED.
+- Keep uncertainty honest but brief: say once that something is unverified rather than repeating caveats in every field.
+
 Fill the JSON fields:
+- projectTitle: a short title, at most 6 words (for example "Campus iced tea opportunity").
+- briefSummary: two or three sentences describing what the CUSTOMER asked for, in their terms, from the intake brief. Not the research or evaluation.
+- transformation: up to three pairs showing how the customer's starting point became the concept.
+- concept.who / when / promise: one short phrase each (at most 12 words), taken from the approved concept. concept.proposition: one or two sentences.
 - concept: from the approved concept. eyebrow "Your next growth opportunity". headline is a short line from the concept, not a claim of success.
 - engines: exactly four entries (market /30, momentum /25, consumer /25, whitespace /20) using the evaluators' scores. Use null when the evaluator did not score the engine or any component was not scoreable. status is a short label such as "Provisional · Medium confidence" or "Not scored · evidence gap".
-- findings: 4 to 8 of the most decision-relevant research findings. kind "sourced" only when the finding cites at least one source id; specialist interpretations are "interpretation"; untested premises are "assumption". detail can be an empty string.
+- findings: the 6 most decision-relevant research findings; summary at most two sentences. kind "sourced" only when the finding cites at least one source id; specialist interpretations are "interpretation"; untested premises are "assumption". detail can be an empty string.
 - charts: only where the research reports comparable numeric values with a cited source (same unit, at least 2 points). Otherwise return an empty array. Never invent or estimate numbers. findingId links the chart to the finding it supports (or empty string).
 - competitors: 3 to 6 real competitors or substitutes from the research, with 3 to 5 shared attributes (landscapeAttributes) such as price, format, positioning, channel. Use the values the research reports; write "Not found" where it has none.
-- risks: the gate concerns, assumptions and open questions the evaluators raised, each with the test that would resolve it.
-- nextTest: the first validation step the specialists proposed.
+- risks: the 5 most important concerns, assumptions and open questions the evaluators raised, each one or two sentences, with the test that would resolve it in one sentence.
+- nextTest: the first validation step the specialists proposed; method in at most two sentences.
+- landscapeSummary: at most three sentences.
 - sources: every source cited above, with sequential ids s1, s2, …, real titles and URLs from the research. Every sourceIds entry must refer to one of these ids.`;
 
 /** Pull the JSON object out of a model reply, tolerating a stray code fence or sentence around it. */
@@ -260,10 +270,27 @@ async function runEngine(req) {
   log(`Agent reports saved in ${path.relative(process.cwd(), dir)}/`);
 }
 
+/** Customer-facing text: no markdown emphasis and no internal record codes such as "(CCE-K002; MKE-G004)". */
+const CODE = /\b[A-Z]{1,4}-[A-Z]{0,2}\d{2,4}\b/;
+function tidy(text) {
+  return text
+    .replace(/\*\*/g, "")
+    .replace(new RegExp(`\\s*\\([^()]*${CODE.source}[^()]*\\)`, "g"), "")
+    .replace(new RegExp(CODE.source, "g"), "")
+    .replace(/\s+([,.;:])/g, "$1")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+}
+const tidyAll = (v, key) =>
+  typeof v === "string" ? (["id", "url", "sourceIds", "chartId", "target", "src"].includes(key) ? v : tidy(v))
+  : Array.isArray(v) ? v.map((x) => tidyAll(x, key))
+  : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, tidyAll(x, k)]))
+  : v;
+
 /** Map the consolidation to Arkko's ResultsPayload, dropping anything that would break its integrity rules. */
 function toPayload(req, consolidated) {
   const empty = { engines: [], transformation: [], findings: [], charts: [], landscapeAttributes: [], competitors: [], risks: [], sources: [] };
-  const c = { ...empty, ...consolidated };
+  const c = tidyAll({ ...empty, ...consolidated });
   const sources = c.sources.filter((s) => s.id && s.title).map((s) => ({
     id: s.id,
     title: s.title,
