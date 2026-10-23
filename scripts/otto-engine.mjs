@@ -148,27 +148,27 @@ function conceptText(req) {
   ].join("\n");
 }
 
-// Arkko's results contract (src/lib/schema.ts resultsSchema), with competitor attributes as pairs.
-const str = { type: "string" };
-const arr = (items) => ({ type: "array", items });
-const obj = (properties, required = Object.keys(properties)) => ({ type: "object", properties, required, additionalProperties: false });
-const RESULTS_SCHEMA = obj({
-  concept: obj({ eyebrow: str, name: str, headline: str, proposition: str, who: str, when: str, promise: str }),
-  projectTitle: str,
-  engines: arr(obj({ engine: { type: "string", enum: ["market", "momentum", "consumer", "whitespace"] }, score: { type: ["number", "null"] }, max: { type: "number" }, status: str })),
-  briefSummary: str,
-  transformation: arr(obj({ from: str, to: str })),
-  findings: arr(obj({ id: str, title: str, summary: str, detail: str, kind: { type: "string", enum: ["sourced", "interpretation", "assumption"] }, sourceIds: arr(str) })),
-  charts: arr(obj({ id: str, findingId: str, title: str, type: { type: "string", enum: ["bar", "line"] }, unit: str, points: arr(obj({ label: str, value: { type: "number" } })), note: str, sourceIds: arr(str) })),
-  landscapeSummary: str,
-  landscapeAttributes: arr(str),
-  competitors: arr(obj({ name: str, brand: str, attributes: arr(obj({ attribute: str, value: str })), sourceIds: arr(str) })),
-  risks: arr(obj({ id: str, statement: str, kind: { type: "string", enum: ["assumption", "risk", "open_question"] }, test: str })),
-  nextTest: obj({ question: str, method: str }),
-  sources: arr(obj({ id: str, title: str, url: str, publisher: str })),
-});
+// The shape the consolidation returns; toPayload() maps it to Arkko's results contract (src/lib/schema.ts).
+const RESULTS_SHAPE = `{
+  "projectTitle": string,
+  "concept": { "eyebrow": string, "name": string, "headline": string, "proposition": string, "who": string, "when": string, "promise": string },
+  "engines": [ { "engine": "market" | "momentum" | "consumer" | "whitespace", "score": number | null, "max": number, "status": string } ],
+  "briefSummary": string,
+  "transformation": [ { "from": string, "to": string } ],
+  "findings": [ { "id": string, "title": string, "summary": string, "detail": string, "kind": "sourced" | "interpretation" | "assumption", "sourceIds": [string] } ],
+  "charts": [ { "id": string, "findingId": string, "title": string, "type": "bar" | "line", "unit": string, "points": [ { "label": string, "value": number } ], "note": string, "sourceIds": [string] } ],
+  "landscapeSummary": string,
+  "landscapeAttributes": [string],
+  "competitors": [ { "name": string, "brand": string, "attributes": [ { "attribute": string, "value": string } ], "sourceIds": [string] } ],
+  "risks": [ { "id": string, "statement": string, "kind": "assumption" | "risk" | "open_question", "test": string } ],
+  "nextTest": { "question": string, "method": string },
+  "sources": [ { "id": string, "title": string, "url": string, "publisher": string } ]
+}`;
 
 const CONSOLIDATION_TASK = `Consolidate the research and evaluation returns above into Arkko's results showcase, following your coordinator rules: attribute faithfully, add no new interpretation, keep uncertainty visible.
+
+Return ONLY one JSON object (no prose, no code fence) with this shape:
+${RESULTS_SHAPE}
 
 Fill the JSON fields:
 - concept: from the approved concept. eyebrow "Your next growth opportunity". headline is a short line from the concept, not a claim of success.
@@ -180,10 +180,32 @@ Fill the JSON fields:
 - nextTest: the first validation step the specialists proposed.
 - sources: every source cited above, with sequential ids s1, s2, …, real titles and URLs from the research. Every sourceIds entry must refer to one of these ids.`;
 
+/** Pull the JSON object out of a model reply, tolerating a stray code fence or sentence around it. */
+function parseJson(text) {
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start < 0 || end <= start) throw new Error("the consolidation did not return JSON");
+  return JSON.parse(text.slice(start, end + 1));
+}
+
 async function runEngine(req) {
   const dir = path.join(process.cwd(), ".otto-runs", req.id);
   await fs.mkdir(dir, { recursive: true });
   const save = (name, text) => fs.writeFile(path.join(dir, name), text);
+  // With --resume, reuse the reports a previous run already saved instead of paying for them again.
+  const resume = process.argv.includes("--resume");
+  const step = async (file, run) => {
+    if (resume) {
+      const text = await fs.readFile(path.join(dir, file), "utf8").catch(() => undefined);
+      if (text) {
+        log(`  ↺ reused ${file}`);
+        return { text, sources: [] };
+      }
+    }
+    const out = await run();
+    await save(file, out.text);
+    return out;
+  };
   const brand = req.answers?.brand ?? req.id;
   log(`Research engine starting for ${brand} (${req.id})`);
   await otto("POST", `/requests/${req.id}/events`, { type: "research_started", detail: "Otto research engine (Arkko skill team)" });
@@ -192,20 +214,17 @@ async function runEngine(req) {
   await save("0-concept.md", concept);
 
   log("Coordinator: writing the research brief…");
-  const brief = await agent("Coordinator · research brief", await skill("coordinator"),
-    `${concept}\n\nIntake is complete. Produce the common research brief (Section 7) with the three research assignments. Output the brief only.`);
-  await save("1-research-brief.md", brief.text);
+  const brief = await step("1-research-brief.md", async () =>
+    agent("Coordinator · research brief", await skill("coordinator"),
+      `${concept}\n\nIntake is complete. Produce the common research brief (Section 7) with the three research assignments. Output the brief only.`));
 
   log("Researchers: market, consumer and feasibility in parallel (with web search)…");
   const assignment = (owner) => `Common research brief\n\n${brief.text}\n\nYou are ${owner}. Complete your assignment from this brief and return your research submission with source records (title, publisher, URL), evidence and inference records, and your contribution to the coverage matrix.`;
   const [market, consumer, feasibility] = await Promise.all([
-    agent("Market researcher", await skill("marketResearch"), assignment("arkko-market-research"), { search: true }),
-    agent("Consumer researcher", await skill("consumerResearch"), assignment("arkko-consumer-research"), { search: true }),
-    agent("Feasibility researcher", await skill("feasibilityResearch"), assignment("arkko-feasibility-research"), { search: true }),
+    step("2a-market-research.md", async () => agent("Market researcher", await skill("marketResearch"), assignment("arkko-market-research"), { search: true })),
+    step("2b-consumer-research.md", async () => agent("Consumer researcher", await skill("consumerResearch"), assignment("arkko-consumer-research"), { search: true })),
+    step("2c-feasibility-research.md", async () => agent("Feasibility researcher", await skill("feasibilityResearch"), assignment("arkko-feasibility-research"), { search: true })),
   ]);
-  await save("2a-market-research.md", market.text);
-  await save("2b-consumer-research.md", consumer.text);
-  await save("2c-feasibility-research.md", feasibility.text);
 
   const packet = [
     `Common research brief\n\n${brief.text}`,
@@ -217,27 +236,24 @@ async function runEngine(req) {
   log("Evaluators: market, consumer and competitive in parallel…");
   const evaluation = (owner) => `${packet}\n\n---\n\nEvaluation policy: default weights Structural 30, Cultural 25, Consumer Fit 25, White Space 20.\nYou are ${owner}. Evaluate your owned components and gates from the full evidence above and return your evaluation submission.`;
   const [marketEval, consumerEval, competitiveEval] = await Promise.all([
-    agent("Market evaluator", await skill("marketEvaluation"), evaluation("arkko-market-evaluation")),
-    agent("Consumer evaluator", await skill("consumerEvaluation"), evaluation("arkko-consumer-evaluation")),
-    agent("Competitive evaluator", await skill("competitiveEvaluation"), evaluation("arkko-competitive-commercial-evaluation")),
+    step("3a-market-evaluation.md", async () => agent("Market evaluator", await skill("marketEvaluation"), evaluation("arkko-market-evaluation"))),
+    step("3b-consumer-evaluation.md", async () => agent("Consumer evaluator", await skill("consumerEvaluation"), evaluation("arkko-consumer-evaluation"))),
+    step("3c-competitive-evaluation.md", async () => agent("Competitive evaluator", await skill("competitiveEvaluation"), evaluation("arkko-competitive-commercial-evaluation"))),
   ]);
-  await save("3a-market-evaluation.md", marketEval.text);
-  await save("3b-consumer-evaluation.md", consumerEval.text);
-  await save("3c-competitive-evaluation.md", competitiveEval.text);
 
   log("Coordinator: consolidating into the results showcase…");
   const searched = [...market.sources, ...consumer.sources, ...feasibility.sources];
-  const consolidated = await agent("Coordinator · consolidation", await skill("coordinator"), [
-    packet,
-    `## Evaluation return D: arkko-market-evaluation\n\n${marketEval.text}`,
-    `## Evaluation return E: arkko-consumer-evaluation\n\n${consumerEval.text}`,
-    `## Evaluation return F: arkko-competitive-commercial-evaluation\n\n${competitiveEval.text}`,
-    `## Pages the researchers retrieved\n${searched.map((s) => `- ${s.title}: ${s.url}`).join("\n")}`,
-    CONSOLIDATION_TASK,
-  ].join("\n\n---\n\n"), { format: { type: "json_schema", schema: RESULTS_SCHEMA } });
-  await save("4-consolidated.json", consolidated.text);
+  const consolidated = await step("4-consolidated.json", async () =>
+    agent("Coordinator · consolidation", await skill("coordinator"), [
+      packet,
+      `## Evaluation return D: arkko-market-evaluation\n\n${marketEval.text}`,
+      `## Evaluation return E: arkko-consumer-evaluation\n\n${consumerEval.text}`,
+      `## Evaluation return F: arkko-competitive-commercial-evaluation\n\n${competitiveEval.text}`,
+      ...(searched.length ? [`## Pages the researchers retrieved\n${searched.map((s) => `- ${s.title}: ${s.url}`).join("\n")}`] : []),
+      CONSOLIDATION_TASK,
+    ].join("\n\n---\n\n")));
 
-  const payload = toPayload(req, JSON.parse(consolidated.text));
+  const payload = toPayload(req, parseJson(consolidated.text));
   await save("5-results-payload.json", JSON.stringify(payload, null, 2));
   const published = await otto("PUT", `/requests/${req.id}/results`, payload);
   log(`Published results v${published.version}: ${published.resultsUrl}`);
@@ -245,7 +261,9 @@ async function runEngine(req) {
 }
 
 /** Map the consolidation to Arkko's ResultsPayload, dropping anything that would break its integrity rules. */
-function toPayload(req, c) {
+function toPayload(req, consolidated) {
+  const empty = { engines: [], transformation: [], findings: [], charts: [], landscapeAttributes: [], competitors: [], risks: [], sources: [] };
+  const c = { ...empty, ...consolidated };
   const sources = c.sources.filter((s) => s.id && s.title).map((s) => ({
     id: s.id,
     title: s.title,
@@ -286,8 +304,12 @@ function toPayload(req, c) {
   const pillars = ["market", "momentum", "consumer", "whitespace"].map((key) => {
     const e = c.engines.find((x) => x.engine === key);
     const meta = ENGINES[key];
-    const score = typeof e?.score === "number" ? `${Math.round(e.score * 10) / 10} / ${meta.max}` : `Not scored / ${meta.max}`;
-    return { label: meta.label, title: meta.title, status: `${score}${e?.status ? ` · ${e.status}` : ""}`, target: meta.target, linkLabel: "View evidence" };
+    const scored = typeof e?.score === "number";
+    const score = scored ? `${Math.round(e.score * 10) / 10} / ${meta.max}` : "Not scored yet";
+    // Card labels stay short: the evaluator's first clause (e.g. "Provisional", "evidence gap").
+    const note = (e?.status ?? "").split(/[.;]/)[0].split("·").map((s) => s.trim()).filter((s) => s && !/^not scored$/i.test(s)).pop();
+    const status = [score, note ?? (scored ? "" : "Evidence gap")].filter(Boolean).join(" · ").slice(0, 60);
+    return { label: meta.label, title: meta.title, status, target: meta.target, linkLabel: "View evidence" };
   });
 
   return {
@@ -338,7 +360,7 @@ function toPayload(req, c) {
         }
       : {}),
     risks: c.risks.map((r) => ({ id: r.id, statement: r.statement, kind: r.kind, ...(r.test ? { test: r.test } : {}) })),
-    nextTest: { question: c.nextTest.question, ...(c.nextTest.method ? { method: c.nextTest.method } : {}) },
+    ...(c.nextTest?.question ? { nextTest: { question: c.nextTest.question, ...(c.nextTest.method ? { method: c.nextTest.method } : {}) } } : {}),
     sources,
     disclaimer: "Desk research and evaluation by Arkko's AI specialist team. Scores are an attractiveness index, not a probability of success.",
   };
