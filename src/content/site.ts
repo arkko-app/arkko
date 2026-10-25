@@ -135,6 +135,13 @@ export const site = {
     },
     footer: "The innovation partner for ambitious CPG brands.",
   },
+  /**
+   * Feature switches. The intake chat is kept in the code but turned off for now (form only, Oct 2026):
+   * set chatIntake to true to bring back the chat-or-form choice and the /api/intake/chat endpoint.
+   */
+  features: {
+    chatIntake: false,
+  },
   intake: {
     chooseTitle: "How would you like to share your brief?",
     chooseBody: "Both take about five minutes and end in the same place. You can switch at any time.",

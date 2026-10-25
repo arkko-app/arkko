@@ -55,7 +55,16 @@ const STEPS: { label: string; icon: IconName }[] = [
   { label: "Submit", icon: "check" },
 ];
 
-const fresh = (): Saved => ({ key: crypto.randomUUID(), answers: {}, email: "", step: 0, uploaded: [] });
+/** With the chat switched off there is nothing to choose: briefs start on the form. */
+const CHAT_ON = site.features.chatIntake;
+const fresh = (): Saved => ({
+  key: crypto.randomUUID(),
+  answers: {},
+  email: "",
+  step: 0,
+  uploaded: [],
+  mode: CHAT_ON ? undefined : "form",
+});
 
 function load(): Saved {
   try {
@@ -87,6 +96,8 @@ export function IntakeFlow({ aiChat }: { aiChat: boolean }) {
     if (sent) {
       // A sent brief is finished: start a new one. The sent one stays reachable from the link on the choice screen.
       saved = fresh();
+    } else if (!CHAT_ON) {
+      saved = { ...saved, mode: "form" };
     } else if (!started) {
       saved = { ...saved, mode: undefined };
     } else if (saved.step === 0 && !saved.mode) {
@@ -502,10 +513,12 @@ export function IntakeFlow({ aiChat }: { aiChat: boolean }) {
                   );
                 })}
               </div>
-              <div className="mt-6 flex items-center justify-between gap-3">
-                <Button type="button" variant="ghost" onClick={() => update({ mode: "chat" })}>
-                  <Icon name="chat" size={15} /> Chat instead
-                </Button>
+              <div className={`mt-6 flex items-center gap-3 ${CHAT_ON ? "justify-between" : "justify-end"}`}>
+                {CHAT_ON && (
+                  <Button type="button" variant="ghost" onClick={() => update({ mode: "chat" })}>
+                    <Icon name="chat" size={15} /> Chat instead
+                  </Button>
+                )}
                 <Button type="submit" disabled={busy}>
                   {busy ? <Spinner /> : null} Continue <Icon name="arrowRight" size={15} />
                 </Button>

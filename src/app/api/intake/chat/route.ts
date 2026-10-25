@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { config } from "@/lib/config";
+import { site } from "@/content/site";
 import { fail } from "@/lib/http";
 import { cleanAnswers } from "@/lib/intake";
 import { CHAT_MODEL, CHAT_SYSTEM, MAX_BODY_CHARS, allowChatMessage, briefInput, chatBody, proposeBriefTool } from "@/lib/chat";
@@ -13,6 +14,8 @@ type Param = Anthropic.Beta.BetaMessageParam;
  *   {"t":"error","v":"…"}   the turn failed; nothing should be appended
  */
 export async function POST(req: Request) {
+  // Switched off in site.features: the intake is form-only for now.
+  if (!site.features.chatIntake) return fail(404, "Chat is turned off. Please use the form.");
   const raw = await req.text();
   if (raw.length > MAX_BODY_CHARS) return fail(413, "This conversation is too long. Please switch to the form.");
   let parsed;
