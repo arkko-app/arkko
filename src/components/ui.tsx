@@ -6,7 +6,7 @@ import { site } from "@/content/site";
 export function Logo({ tagline = true, href = "/" }: { tagline?: boolean; href?: string | null }) {
   const inner = (
     <>
-      <span className="font-serif text-[26px] font-bold tracking-tight text-ink">{site.name}</span>
+      <span className="font-serif text-[28px] font-black tracking-[-0.03em] text-ink">{site.name}</span>
       {tagline && (
         <span className="mt-1.5 block max-w-[110px] text-[11px] leading-snug text-ink-2">{site.tagline}</span>
       )}
@@ -22,10 +22,10 @@ export function Logo({ tagline = true, href = "/" }: { tagline?: boolean; href?:
 type BtnProps = { variant?: "primary" | "secondary" | "ghost"; icon?: IconName; children: ReactNode };
 
 const btn = {
-  base: "inline-flex items-center justify-center gap-2 rounded-lg px-4 h-10 text-sm font-semibold transition-colors disabled:opacity-50 disabled:pointer-events-none",
-  primary: "bg-brand text-brand-ink hover:bg-brand-hover shadow-sm",
-  secondary: "bg-surface text-ink border border-line hover:border-line-strong shadow-[0_1px_0_rgba(0,0,0,0.03)]",
-  ghost: "text-brand-text hover:bg-brand-soft",
+  base: "inline-flex items-center justify-center gap-2 rounded-lg px-4 h-10 text-sm font-bold tracking-[0.01em] transition-[transform,background-color] disabled:opacity-50 disabled:pointer-events-none",
+  primary: "bg-brand text-brand-ink border-[1.5px] border-ink hover:-rotate-1 active:rotate-0 active:translate-y-px",
+  secondary: "bg-surface text-ink border-[1.5px] border-ink hover:-rotate-1 active:rotate-0 active:translate-y-px",
+  ghost: "text-ink hover:bg-surface-2",
 };
 
 export function Button({ variant = "primary", icon, children, className = "", ...rest }: BtnProps & ComponentProps<"button">) {

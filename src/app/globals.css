@@ -1,26 +1,31 @@
 @import "tailwindcss";
 
+/* Arkko brand palette (Pedro's design system: cream, sand, espresso, with orange, pistachio, pomelo and amber). */
 :root {
-  --bg: #f7f5f0;
-  --surface: #ffffff;
-  --surface-2: #f2f0ea;
-  --line: #e6e2d8;
-  --line-strong: #d6d1c4;
-  --ink: #1d2a27;
-  --ink-2: #4b5653;
-  --muted: #7a8380;
-  --brand: #1f5148;
-  --brand-hover: #173f38;
-  --brand-ink: #ffffff;
-  --brand-soft: #e2ebe7;
-  --brand-text: #1f5a4f;
-  --accent-soft: #f8efdb;
-  --accent-line: #e7d4a4;
-  --accent-dot: #d4a12f;
-  --accent-text: #6b5419;
-  --chip: #ecebe4;
-  --danger: #a23a2a;
-  --danger-soft: #fbece8;
+  --bg: #fffdf9;
+  --surface: #fffdf9;
+  --surface-2: #f4ece1;
+  --line: #e2d6c6;
+  --line-strong: #1e0a10;
+  --ink: #1e0a10;
+  --ink-2: #625356;
+  --muted: #857679;
+  --brand: #ff331f;
+  --brand-hover: #f02a16;
+  --brand-ink: #1e0a10;
+  --brand-soft: #e4f8c4;
+  --brand-text: #1e0a10;
+  --accent-soft: #fbe6cc;
+  --accent-line: #ecb877;
+  --accent-dot: #e07a00;
+  --accent-text: #7a4100;
+  --chip: #f4ece1;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --pistachio: #c5f277;
+  --pomelo: #ff6b9d;
+  --amber: #e07a00;
+  --espresso: #1e0a10;
 }
 
 @theme inline {
@@ -44,8 +49,14 @@
   --color-chip: var(--chip);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
-  --font-sans: var(--font-dm-sans);
-  --font-serif: var(--font-source-serif);
+  --color-pistachio: var(--pistachio);
+  --color-pomelo: var(--pomelo);
+  --color-amber: var(--amber);
+  --color-espresso: var(--espresso);
+  --font-sans: var(--font-jakarta);
+  --font-serif: var(--font-fraunces);
+  --font-headline: var(--font-anton);
+  --font-mono: var(--font-jetbrains);
 }
 
 body {
@@ -54,9 +65,10 @@ body {
 }
 
 .eyebrow {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -67,8 +79,11 @@ body {
 /* In the base layer so utilities like `outline-none` can override it (unlayered CSS beats every layer). */
 @layer base {
   :focus-visible {
-    outline: 2px solid var(--brand);
+    outline: 2px solid var(--ink);
     outline-offset: 2px;
+  }
+  html {
+    scroll-behavior: smooth;
   }
 }
 
@@ -83,4 +98,16 @@ body {
 @keyframes fadein {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }
+}
+
+/* Home intro: the logo painting recedes as the page scrolls up over it, where scroll-driven animation is supported. */
+@keyframes intro-recede {
+  to { transform: scale(0.9); opacity: 0.45; }
+}
+@supports (animation-timeline: scroll()) {
+  .intro-art {
+    animation: intro-recede linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 100vh;
+  }
 }
