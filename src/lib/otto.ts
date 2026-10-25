@@ -59,6 +59,29 @@ async function push(event: string, payload: unknown, idempotencyKey: string) {
   }
 }
 
+/** Ask GitHub to start the Otto engine for this request. Returns a line for the handoff log. */
+async function dispatch(requestId: string) {
+  const { repo, token } = config.ottoDispatch!;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${repo}/dispatches`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ event_type: "brief-submitted", client_payload: { requestId } }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    return res.ok
+      ? "Queued for Otto; research engine started"
+      : `Queued for Otto; engine start failed (GitHub ${res.status}), the next sweep will pick it up`;
+  } catch (err) {
+    return `Queued for Otto; could not reach GitHub (${(err as Error).message}), the next sweep will pick it up`;
+  }
+}
+
 /**
  * Hand a submitted request to Otto.
  *
@@ -68,8 +91,10 @@ async function push(event: string, payload: unknown, idempotencyKey: string) {
  */
 export async function handOff(r: RequestRecord) {
   if (!config.ottoWebhookUrl) {
+    // The queue is the source of truth; the dispatch only makes the engine start now instead of at its next sweep.
+    const started = config.ottoDispatch ? await dispatch(r.id) : undefined;
     return updateRequest(r.id, (rec) => {
-      rec.handoff.push({ at: now(), mode: "pull", ok: true, message: "Queued for Otto to collect" });
+      rec.handoff.push({ at: now(), mode: "pull", ok: true, message: started ?? "Queued for Otto to collect" });
     });
   }
 
