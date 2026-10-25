@@ -133,7 +133,7 @@ export const resultsSchema = z
   });
 
 export const eventSchema = z.object({
-  type: z.enum(["research_started", "final_email_sent", "error"]),
+  type: z.enum(["research_started", "research_progress", "final_email_sent", "error"]),
   detail: z.string().max(50_000).optional(),
   data: z.record(z.string(), z.unknown()).optional(),
 });

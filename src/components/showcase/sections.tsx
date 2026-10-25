@@ -444,7 +444,7 @@ export function Evidence() {
         {data.access && (
           <div className="rounded-2xl border border-line bg-surface p-6">
             <div className="font-serif text-[18px] font-semibold text-ink">Email me the results</div>
-            <p className="mb-3 mt-1 text-sm text-ink-2">We&apos;ll send the PDF and a link to this page.</p>
+            <p className="mb-3 mt-1 text-sm text-ink-2">{deliverables?.pdf ? "We’ll send the PDF and a link to this page." : "We’ll email you a link to this page."}</p>
             <EmailResults
               token={data.access.token}
               email={data.access.email}

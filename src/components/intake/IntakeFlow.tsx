@@ -716,13 +716,13 @@ function Confirmation({ s, onNew }: { s: Saved; onNew: () => void }) {
         Thanks. It’s with us.
       </h1>
       <p className="mt-2 text-[16px] text-ink-2">
-        Follow your request on your request page. Your results will appear there when the research is done.
+        Research usually takes about 10 minutes. You can close this page: your results will appear on your request page.
       </p>
 
       <div className="mt-8 rounded-2xl border border-line bg-surface p-5 sm:p-6">
         <div className="flex items-center gap-3">
           <span className={`size-2.5 rounded-full ${pickedUp ? "bg-brand" : "bg-accent-dot"}`} />
-          <span className="font-medium text-ink">{pickedUp ? "Otto has your brief" : "Saved and queued for Otto"}</span>
+          <span className="font-medium text-ink">{pickedUp ? "Research has started" : "Saved and queued for research"}</span>
         </div>
         <p className="mt-4 text-sm text-ink-2">
           <strong className="text-ink">Save this link.</strong> It’s how you get back to your request.
@@ -737,7 +737,7 @@ function Confirmation({ s, onNew }: { s: Saved; onNew: () => void }) {
           Open your request page <Icon name="arrowRight" size={15} />
         </Link>
         <p className="mt-4 text-xs text-muted">
-          {sub.email ? <>We’ll email the results to <strong className="text-ink-2">{sub.email}</strong>.</> : "Want the results by email? You can add your email on the request page."}
+          {sub.email ? <>We’ll email you at <strong className="text-ink-2">{sub.email}</strong> when your results are ready.</> : "Want an email when your results are ready? You can add your email on the request page."}
         </p>
       </div>
 

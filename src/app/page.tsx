@@ -276,7 +276,7 @@ export default function Home() {
                 <details key={f.q} open={i === 0} className="group border-b-[1.5px] border-ink py-5">
                   <summary className="flex cursor-pointer list-none justify-between gap-4 text-[18px] font-bold [&::-webkit-details-marker]:hidden">
                     {f.q}
-                    <span aria-hidden className="transition-transform group-open:rotate-45">+</span>
+                    <span aria-hidden className="mr-1 shrink-0 transition-transform group-open:rotate-45">+</span>
                   </summary>
                   <p className="mt-3 max-w-[720px] text-[16px] text-ink-2">{f.a}</p>
                 </details>

@@ -4,6 +4,7 @@ import type { RequestRecord, Review } from "@/lib/types";
 import { Icon, type IconName } from "../icons";
 import { Chip, Logo } from "../ui";
 import { AutoRefresh, CopyLink, EmailResults, RememberRequest, ReviewDecision } from "./actions";
+import { ResearchProgress } from "./ResearchProgress";
 
 const COPY: Record<string, { title: string; body: string }> = {
   "idea:developing": {
@@ -32,11 +33,11 @@ const COPY: Record<string, { title: string; body: string }> = {
   },
   "research:developing": {
     title: "Concept approved. Research is underway.",
-    body: "Otto is researching the opportunity. Your results page will be ready here when it's done.",
+    body: "Otto is researching the opportunity. It usually takes about 10 minutes, and your results page will be ready here when it's done.",
   },
   "brief:research": {
     title: "We're researching your brief.",
-    body: "Arkko's research team is looking into the market, consumers and feasibility, then scoring the opportunity. Your results page will be ready here when it's done.",
+    body: "Arkko's research team is looking into the market, consumers and feasibility, then scoring the opportunity. It usually takes about 10 minutes.",
   },
   "results:done": {
     title: "Your results are ready.",
@@ -152,7 +153,7 @@ export function StatusView({ rec, token }: { rec: RequestRecord; token: string }
           </div>
         </header>
 
-        <main className="mx-auto grid max-w-[1080px] gap-8 px-4 pb-20 pt-8 sm:px-8 sm:pt-12 lg:grid-cols-[1fr_300px]">
+        <main className="mx-auto grid max-w-[1080px] grid-cols-1 gap-8 px-4 pb-20 pt-8 sm:px-8 sm:pt-12 lg:grid-cols-[1fr_300px]">
           <div className="min-w-0">
             <div className="eyebrow text-brand-text">Your request</div>
             <h1 className="mt-2 font-serif text-[36px] font-bold leading-tight tracking-tight text-ink sm:text-[44px]">
@@ -167,10 +168,14 @@ export function StatusView({ rec, token }: { rec: RequestRecord; token: string }
               </div>
             )}
 
+            {stage.phase === "research" && <ResearchProgress rec={rec} />}
+
             {waitingOnOtto && (
               <div className="mt-8 flex items-center gap-3 rounded-2xl border border-dashed border-line-strong bg-surface p-5 text-sm text-ink-2">
                 <Icon name="clock" size={16} className="shrink-0 text-muted" />
-                This page checks for updates on its own. You can close it and come back with your link.
+                {stage.phase === "research"
+                  ? `You can close this page. Come back with your link${rec.email ? `, or watch for our email to ${rec.email}` : ""}. This page updates on its own.`
+                  : "This page checks for updates on its own. You can close it and come back with your link."}
               </div>
             )}
 
@@ -184,7 +189,7 @@ export function StatusView({ rec, token }: { rec: RequestRecord; token: string }
                 </span>
                 <div className="flex-1">
                   <div className="font-serif text-[20px] font-semibold text-ink">Open your results</div>
-                  <div className="text-sm text-ink-2">Concept, evidence, risks and the full PDF brief.</div>
+                  <div className="text-sm text-ink-2">The concept, the evidence behind it, risks and what to test next.</div>
                 </div>
                 <Icon name="arrowRight" size={18} className="text-brand-text" />
               </Link>
@@ -213,7 +218,7 @@ export function StatusView({ rec, token }: { rec: RequestRecord; token: string }
             <div className="rounded-2xl border border-line bg-surface p-5">
               <div className="eyebrow text-[10px] text-ink-2">Results by email</div>
               <p className="mb-3 mt-2 text-sm text-ink-2">
-                {sent || rec.email ? "" : "Optional. We'll send the PDF and your results link."}
+                {sent || rec.email ? "" : "Optional. We'll email you a link to your results."}
               </p>
               <EmailResults token={token} email={rec.email} sent={sent} resultsReady={stage.phase === "results"} />
             </div>

@@ -18,6 +18,7 @@ export type WorkflowEventType =
   | "review_posted" // Otto posted an idea or concept version for the user
   | "review_decided" // the user approved or requested changes in the web app
   | "research_started"
+  | "research_progress" // Otto finished a research step; data.step names it (see RESEARCH_STEPS)
   | "results_published"
   | "final_email_sent" // Otto emailed the results (only when the user asked)
   | "error";

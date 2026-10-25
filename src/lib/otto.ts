@@ -59,8 +59,11 @@ async function push(event: string, payload: unknown, idempotencyKey: string) {
   }
 }
 
-/** Ask GitHub to start the Otto engine for this request. Returns a line for the handoff log. */
-async function dispatch(requestId: string) {
+/**
+ * Ask GitHub to run the Otto engine now for this request: "brief-submitted" starts the research,
+ * "results-email" sends a requested results email. Returns a line for the handoff log.
+ */
+async function dispatch(requestId: string, eventType: "brief-submitted" | "results-email" = "brief-submitted") {
   const { repo, token } = config.ottoDispatch!;
   try {
     const res = await fetch(`https://api.github.com/repos/${repo}/dispatches`, {
@@ -71,7 +74,7 @@ async function dispatch(requestId: string) {
         "X-GitHub-Api-Version": "2022-11-28",
         "content-type": "application/json",
       },
-      body: JSON.stringify({ event_type: "brief-submitted", client_payload: { requestId } }),
+      body: JSON.stringify({ event_type: eventType, client_payload: { requestId } }),
       signal: AbortSignal.timeout(10_000),
     });
     return res.ok
@@ -112,6 +115,10 @@ export async function handOff(r: RequestRecord) {
  * always collect it from GET /api/otto/notifications; the push is a fast path.
  */
 export async function pushNotification(n: OttoNotification | undefined) {
-  if (!n || !config.ottoWebhookUrl) return;
-  await push(n.type, { notification: n }, n.id);
+  if (!n) return;
+  if (config.ottoWebhookUrl) {
+    await push(n.type, { notification: n }, n.id);
+  } else if (config.ottoDispatch && n.type === "results_email.requested") {
+    await dispatch(n.requestId, "results-email");
+  }
 }
