@@ -15,6 +15,15 @@ export const config = {
   ottoApiKey: process.env.OTTO_API_KEY ?? "dev-otto-key",
   /** Optional: if set, new requests are pushed here. Otherwise Otto pulls the queue. */
   ottoWebhookUrl: process.env.OTTO_WEBHOOK_URL || undefined,
+  /**
+   * Optional: start the Otto engine on GitHub Actions as soon as a brief is submitted
+   * (a repository_dispatch to "owner/repo", with a token that has Contents: read and write on it).
+   * Without it, the engine's scheduled sweep still picks briefs up from the queue.
+   */
+  ottoDispatch:
+    process.env.OTTO_DISPATCH_REPO && process.env.OTTO_DISPATCH_TOKEN
+      ? { repo: process.env.OTTO_DISPATCH_REPO, token: process.env.OTTO_DISPATCH_TOKEN }
+      : undefined,
   /** The intake chat uses Claude when an API key is set; otherwise it asks the form's questions one by one. */
   chatEnabled: !!process.env.ANTHROPIC_API_KEY,
   /** Store data in Airtable when both are set; otherwise use the local JSON store. */

@@ -30,6 +30,7 @@ Copy and intake questions live in `src/content/site.ts`. You can replace them wi
 | `ARKKO_SIGNING_SECRET` | Signs file URLs and webhook bodies | dev value |
 | `OTTO_API_KEY` | Bearer token for `/api/otto/*` | `dev-otto-key` |
 | `OTTO_WEBHOOK_URL` | Optional. If set, new requests are pushed here | unset → Otto pulls |
+| `OTTO_DISPATCH_REPO`, `OTTO_DISPATCH_TOKEN` | Optional. Start the Otto engine on GitHub Actions when a brief is submitted (`owner/repo`, token with Contents: read and write) | unset → the engine's sweep picks briefs up |
 | `ARKKO_DATA_DIR` | Where records and files are stored | `.data/` (`/tmp/arkko` on Vercel) |
 | `ANTHROPIC_API_KEY` | Claude API key for the intake chat (`/api/intake/chat`) | unset → chat unavailable, form still works |
 
@@ -90,6 +91,9 @@ Airtable allows about 5 requests per second per base; the store retries when thr
 Approvals happen only in the web app, not by email.
 
 ## Otto integration
+
+The research engine (the project owner's skill team, run with Claude) lives in the private `arkko-app/otto-engine`
+repository and runs on GitHub Actions. It uses the API below like any other Otto.
 
 Every call needs `Authorization: Bearer $OTTO_API_KEY`.
 
