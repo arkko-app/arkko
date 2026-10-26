@@ -36,29 +36,48 @@ export function RememberRequest({ path, brand }: { path: string; brand: string }
   return null;
 }
 
-/** Re-render from the server while Otto is working, so new versions appear without a reload. */
-export function AutoRefresh({ seconds = 15 }: { seconds?: number }) {
-  const router = useRouter();
-  useEffect(() => {
-    const t = setInterval(() => {
-      if (document.visibilityState === "visible") router.refresh();
-    }, seconds * 1000);
-    return () => clearInterval(t);
-  }, [router, seconds]);
-  return null;
-}
+/** Stop checking a page left open this long without any change, and offer a refresh instead. */
+const WATCH_FOR_MS = 45 * 60_000;
 
-/** While a brief waits to be picked up, ask the server once a minute whether the engine needs starting again. */
-export function RestartIfStuck({ token }: { token: string }) {
+/**
+ * While Otto is working, check now and then whether the request changed (a cheap call) and only then
+ * re-render from the server, so new progress and results appear without a reload. Checks pause while
+ * the tab is hidden.
+ */
+export function WatchForChanges({ token, updatedAt, seconds = 30 }: { token: string; updatedAt: string; seconds?: number }) {
+  const router = useRouter();
+  const [stopped, setStopped] = useState(false);
   useEffect(() => {
-    const check = () => {
-      if (document.visibilityState === "visible")
-        fetch(`/api/status/${token}/restart`, { method: "POST" }).catch(() => {});
+    const until = Date.now() + WATCH_FOR_MS;
+    const check = async () => {
+      if (document.visibilityState !== "visible") return;
+      if (Date.now() > until) {
+        clearInterval(t);
+        setStopped(true);
+        return;
+      }
+      const res = await fetch(`/api/status/${token}/check`, { method: "POST" }).catch(() => null);
+      if (!res?.ok) return;
+      const latest: { updatedAt?: string } = await res.json().catch(() => ({}));
+      if (latest.updatedAt && latest.updatedAt !== updatedAt) router.refresh();
     };
-    const t = setInterval(check, 60_000);
-    return () => clearInterval(t);
-  }, [token]);
-  return null;
+    const t = setInterval(check, seconds * 1000);
+    document.addEventListener("visibilitychange", check);
+    return () => {
+      clearInterval(t);
+      document.removeEventListener("visibilitychange", check);
+    };
+  }, [router, token, updatedAt, seconds]);
+
+  if (!stopped) return null;
+  return (
+    <div role="status" className="fixed inset-x-4 bottom-4 z-30 mx-auto flex max-w-md items-center gap-3 rounded-xl border border-line bg-surface p-3 pl-4 text-sm text-ink-2 shadow-lg">
+      <span className="flex-1">This page stopped checking for updates.</span>
+      <Button type="button" variant="secondary" onClick={() => window.location.reload()}>
+        <Icon name="refresh" size={15} /> Refresh
+      </Button>
+    </div>
+  );
 }
 
 export function CopyLink({ path }: { path: string }) {

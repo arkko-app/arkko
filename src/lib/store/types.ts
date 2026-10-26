@@ -7,6 +7,8 @@ export interface Store {
   listRequests(): Promise<RequestRecord[]>;
   getRequest(id: string): Promise<RequestRecord | undefined>;
   getByResultsToken(token: string): Promise<RequestRecord | undefined>;
+  /** A request's status and last change, without loading its files, reviews or results. For cheap polling. */
+  peekByResultsToken(token: string): Promise<Pick<RequestRecord, "status" | "updatedAt"> | undefined>;
   /** Returns the existing request if one with the same idempotency key exists. */
   insertRequest(rec: RequestRecord): Promise<RequestRecord>;
   updateRequest(

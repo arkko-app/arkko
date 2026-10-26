@@ -98,16 +98,19 @@ const RESTART_AFTER_MS = 5 * 60_000;
 const MAX_RESTARTS = 3;
 const RESTART_NOTE = "Not picked up after 5 minutes; starting the engine again";
 
+/** True when a brief still waiting for Otto has had no activity since `lastChange` for long enough to restart it. */
+export const restartDue = (lastChange: string) => Date.now() - Date.parse(lastChange) >= RESTART_AFTER_MS;
+
 /**
  * Start the engine again for a brief that is still waiting to be picked up, e.g. because the first start
- * never reached GitHub. Called while the customer watches the status page. Safe to call often: it acts at
+ * never reached GitHub. Checked while the customer watches the status page. Safe to call often: it acts at
  * most once every 5 minutes per brief, and the engine skips a brief it has already picked up, so a
  * restart never runs the research twice.
  */
 export async function restartIfStuck(r: RequestRecord) {
   if (config.ottoWebhookUrl || !config.ottoDispatch || r.status !== "submitted" || !r.submittedAt) return;
   const lastStart = r.handoff.at(-1)?.at ?? r.submittedAt;
-  if (Date.now() - Date.parse(lastStart) < RESTART_AFTER_MS) return;
+  if (!restartDue(lastStart)) return;
   if (r.handoff.filter((h) => h.message === RESTART_NOTE).length >= MAX_RESTARTS) return;
 
   // Note the restart before calling GitHub, so a second open tab sees it and doesn't send another.

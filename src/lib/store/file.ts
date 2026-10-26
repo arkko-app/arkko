@@ -60,6 +60,11 @@ export const fileStore: Store = {
     return (await load()).requests.find((r) => r.resultsToken === token);
   },
 
+  async peekByResultsToken(token) {
+    const r = (await load()).requests.find((r) => r.resultsToken === token);
+    return r && { status: r.status, updatedAt: r.updatedAt };
+  },
+
   insertRequest(rec) {
     return exclusive(async () => {
       const db = await load();

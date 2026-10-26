@@ -8,6 +8,7 @@ import { seedRecords } from "../seed";
 import type {
   OttoNotification,
   RequestRecord,
+  RequestStatus,
   ResultsVersion,
   Review,
   StoredFile,
@@ -472,6 +473,12 @@ export const airtableStore: Store = {
   async getByResultsToken(token) {
     await ensureSeeded();
     return (await loadWhere(eq("Access token hash", sha(token))))?.rec;
+  },
+
+  async peekByResultsToken(token) {
+    await ensureSeeded();
+    const [row] = await list(T.requests, eq("Access token hash", sha(token)));
+    return row && { status: str(row.fields.Status) as RequestStatus, updatedAt: str(row.fields["Updated at"])! };
   },
 
   async insertRequest(rec) {
