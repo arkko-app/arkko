@@ -3,7 +3,7 @@ import { currentStage, isApproved, reviewsFor, type Phase, type Stage } from "@/
 import type { RequestRecord, Review } from "@/lib/types";
 import { Icon, type IconName } from "../icons";
 import { Chip, Logo } from "../ui";
-import { AutoRefresh, CopyLink, EmailResults, RememberRequest, ReviewDecision } from "./actions";
+import { AutoRefresh, CopyLink, EmailResults, RememberRequest, RestartIfStuck, ReviewDecision } from "./actions";
 import { ResearchProgress } from "./ResearchProgress";
 
 const COPY: Record<string, { title: string; body: string }> = {
@@ -87,6 +87,7 @@ export function StatusView({ rec, token }: { rec: RequestRecord; token: string }
     <div className="flex min-h-screen bg-bg">
       <RememberRequest path={statusPath} brand={brand} />
       {waitingOnOtto && <AutoRefresh />}
+      {rec.status === "submitted" && <RestartIfStuck token={token} />}
 
       <aside className="sticky top-0 hidden h-screen w-[232px] shrink-0 flex-col border-r border-line px-4 py-7 lg:flex">
         <div className="px-2">

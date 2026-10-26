@@ -48,6 +48,19 @@ export function AutoRefresh({ seconds = 15 }: { seconds?: number }) {
   return null;
 }
 
+/** While a brief waits to be picked up, ask the server once a minute whether the engine needs starting again. */
+export function RestartIfStuck({ token }: { token: string }) {
+  useEffect(() => {
+    const check = () => {
+      if (document.visibilityState === "visible")
+        fetch(`/api/status/${token}/restart`, { method: "POST" }).catch(() => {});
+    };
+    const t = setInterval(check, 60_000);
+    return () => clearInterval(t);
+  }, [token]);
+  return null;
+}
+
 export function CopyLink({ path }: { path: string }) {
   const [url, setUrl] = useState(path);
   const [copied, setCopied] = useState(false);

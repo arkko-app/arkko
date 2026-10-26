@@ -65,24 +65,63 @@ async function push(event: string, payload: unknown, idempotencyKey: string) {
  */
 async function dispatch(requestId: string, eventType: "brief-submitted" | "results-email" = "brief-submitted") {
   const { repo, token } = config.ottoDispatch!;
-  try {
-    const res = await fetch(`https://api.github.com/repos/${repo}/dispatches`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({ event_type: eventType, client_payload: { requestId } }),
-      signal: AbortSignal.timeout(10_000),
-    });
-    return res.ok
-      ? "Queued for Otto; research engine started"
-      : `Queued for Otto; engine start failed (GitHub ${res.status}), the next sweep will pick it up`;
-  } catch (err) {
-    return `Queued for Otto; could not reach GitHub (${(err as Error).message}), the next sweep will pick it up`;
+  // Network errors and GitHub hiccups (429, 5xx) are retried; any other status, such as a bad token, is final.
+  let outcome = "";
+  for (let attempt = 1; attempt <= DISPATCH_ATTEMPTS; attempt++) {
+    if (attempt > 1) await new Promise((r) => setTimeout(r, 1000 * (attempt - 1)));
+    try {
+      const res = await fetch(`https://api.github.com/repos/${repo}/dispatches`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ event_type: eventType, client_payload: { requestId } }),
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (res.ok) return "Queued for Otto; research engine started";
+      outcome = `Queued for Otto; engine start failed (GitHub ${res.status}), the next sweep will pick it up`;
+      if (res.status !== 429 && res.status < 500) break;
+    } catch (err) {
+      outcome = `Queued for Otto; could not reach GitHub (${(err as Error).message}), the next sweep will pick it up`;
+    }
   }
+  return outcome;
+}
+
+const DISPATCH_ATTEMPTS = 3;
+
+/** A brief Otto hasn't picked up after this long gets its engine start sent again. */
+const RESTART_AFTER_MS = 5 * 60_000;
+const MAX_RESTARTS = 3;
+const RESTART_NOTE = "Not picked up after 5 minutes; starting the engine again";
+
+/**
+ * Start the engine again for a brief that is still waiting to be picked up, e.g. because the first start
+ * never reached GitHub. Called while the customer watches the status page. Safe to call often: it acts at
+ * most once every 5 minutes per brief, and the engine skips a brief it has already picked up, so a
+ * restart never runs the research twice.
+ */
+export async function restartIfStuck(r: RequestRecord) {
+  if (config.ottoWebhookUrl || !config.ottoDispatch || r.status !== "submitted" || !r.submittedAt) return;
+  const lastStart = r.handoff.at(-1)?.at ?? r.submittedAt;
+  if (Date.now() - Date.parse(lastStart) < RESTART_AFTER_MS) return;
+  if (r.handoff.filter((h) => h.message === RESTART_NOTE).length >= MAX_RESTARTS) return;
+
+  // Note the restart before calling GitHub, so a second open tab sees it and doesn't send another.
+  let noted = false;
+  await updateRequest(r.id, (rec) => {
+    if (rec.status !== "submitted" || rec.handoff.at(-1)?.at !== r.handoff.at(-1)?.at) return;
+    rec.handoff.push({ at: now(), mode: "pull", ok: true, message: RESTART_NOTE });
+    noted = true;
+  });
+  if (!noted) return;
+  const started = await dispatch(r.id);
+  await updateRequest(r.id, (rec) => {
+    rec.handoff.push({ at: now(), mode: "pull", ok: true, message: started });
+  });
 }
 
 /**
