@@ -482,7 +482,7 @@ export function IntakeFlow({ aiChat }: { aiChat: boolean }) {
               <h1 ref={headingRef} tabIndex={-1} className="mt-2 font-serif text-[36px] font-bold leading-tight tracking-tight text-ink outline-none sm:text-[44px]">
                 Tell us what you want to grow.
               </h1>
-              <p className="mt-2 text-[16px] text-ink-2">Plain language is perfect. You’ll shape the idea with us on your request page.</p>
+              <p className="mt-2 text-[16px] text-ink-2">Plain language is perfect. You’ll check everything before it’s sent.</p>
               <div className="mt-8 space-y-6 rounded-2xl border border-line bg-surface p-5 sm:p-7">
                 {intakeFields.map((f) => {
                   const err = fieldErrors[f.id];
@@ -628,7 +628,7 @@ export function IntakeFlow({ aiChat }: { aiChat: boolean }) {
                 Ready to send?
               </h1>
               <p className="mt-2 text-[16px] text-ink-2">
-                After you submit, you’ll get a link to your request page. That’s where you’ll review and approve the idea, then the concept, and see your results.
+                Once you submit, the research team starts right away and your brief can no longer be changed. You’ll get a link to follow the research and see your results.
               </p>
 
               <div className="mt-8 rounded-2xl border border-line bg-surface p-5 sm:p-7">
@@ -643,7 +643,7 @@ export function IntakeFlow({ aiChat }: { aiChat: boolean }) {
                 <label htmlFor="field-email" className="mt-6 block text-[15px] font-medium text-ink">
                   Email me the results <span className="text-sm font-normal text-muted">(optional)</span>
                 </label>
-                <p className="mt-0.5 text-sm text-muted">We’ll only use it to send the PDF and your results link. You can also add it later.</p>
+                <p className="mt-0.5 text-sm text-muted">We’ll only use it to send your results link. You can also add it later.</p>
                 <input
                   id="field-email"
                   type="email"
