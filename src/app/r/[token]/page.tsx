@@ -6,6 +6,7 @@ import { getByResultsToken } from "@/lib/db";
 import { buildShowcaseData, withResolvedReviewImages } from "@/lib/showcase";
 import { Showcase } from "@/components/showcase/Showcase";
 import { StatusView } from "@/components/status/StatusView";
+import { PageSkeleton } from "@/components/PageSkeleton";
 
 export const metadata: Metadata = {
   title: "Your results — Arkko",
@@ -25,7 +26,7 @@ async function Results({ params }: { params: Promise<{ token: string }> }) {
 
 export default function Page({ params }: PageProps<"/r/[token]">) {
   return (
-    <Suspense fallback={<div className="grid min-h-screen place-items-center text-sm text-muted">Loading…</div>}>
+    <Suspense fallback={<PageSkeleton variant="request" />}>
       <Results params={params} />
     </Suspense>
   );

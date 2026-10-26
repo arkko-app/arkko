@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import { config } from "@/lib/config";
 import { IntakeFlow } from "@/components/intake/IntakeFlow";
+import { PageSkeleton } from "@/components/PageSkeleton";
 
 export const metadata: Metadata = { title: "Start a brief — Arkko" };
 
@@ -14,7 +15,7 @@ async function Intake() {
 
 export default function StartPage() {
   return (
-    <Suspense fallback={<div className="grid min-h-screen place-items-center text-sm text-muted">Loading…</div>}>
+    <Suspense fallback={<PageSkeleton variant="brief" />}>
       <Intake />
     </Suspense>
   );

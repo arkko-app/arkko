@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { intakeFields, site } from "@/content/site";
 import { Icon, type IconName } from "../icons";
+import { PageSkeleton } from "../PageSkeleton";
 import { Button, Logo, Spinner } from "../ui";
 import { CopyLink, readSavedRequests, rememberRequest, type SavedRequest } from "../status/actions";
 import { ChatBrief, transcriptOf, type ChatState } from "./ChatBrief";
@@ -310,13 +311,7 @@ export function IntakeFlow({ aiChat }: { aiChat: boolean }) {
     setRecent(readSavedRequests()[0] ?? null);
   }
 
-  if (!s) {
-    return (
-      <div className="grid min-h-screen place-items-center text-muted">
-        <Spinner />
-      </div>
-    );
-  }
+  if (!s) return <PageSkeleton variant="brief" />;
 
   const uploading = uploads.some((u) => u.state === "uploading");
   const failed = uploads.filter((u) => u.state === "error").length;

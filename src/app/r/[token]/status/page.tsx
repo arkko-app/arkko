@@ -5,6 +5,7 @@ import { connection } from "next/server";
 import { getByResultsToken } from "@/lib/db";
 import { withResolvedReviewImages } from "@/lib/showcase";
 import { StatusView } from "@/components/status/StatusView";
+import { PageSkeleton } from "@/components/PageSkeleton";
 
 export const metadata: Metadata = {
   title: "Your request — Arkko",
@@ -22,7 +23,7 @@ async function Status({ params }: { params: Promise<{ token: string }> }) {
 
 export default function Page({ params }: PageProps<"/r/[token]/status">) {
   return (
-    <Suspense fallback={<div className="grid min-h-screen place-items-center text-sm text-muted">Loading…</div>}>
+    <Suspense fallback={<PageSkeleton variant="request" />}>
       <Status params={params} />
     </Suspense>
   );
