@@ -140,7 +140,7 @@ export const site = {
    * set chatIntake to true to bring back the chat-or-form choice and the /api/intake/chat endpoint.
    */
   features: {
-    chatIntake: false,
+    chatIntake: true,
   },
   intake: {
     chooseTitle: "How would you like to share your brief?",
