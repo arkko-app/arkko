@@ -643,7 +643,7 @@ export function IntakeFlow({ aiChat }: { aiChat: boolean }) {
                 <label htmlFor="field-email" className="mt-6 block text-[15px] font-medium text-ink">
                   Email me the results <span className="text-sm font-normal text-muted">(optional)</span>
                 </label>
-                <p className="mt-0.5 text-sm text-muted">We’ll only use it to send your results link. You can also add it later.</p>
+                <p className="mt-0.5 text-sm text-muted">Recommended. Your results live at a private link, and this way it can’t get lost. We’ll only use it to send you that link.</p>
                 <input
                   id="field-email"
                   type="email"
@@ -716,7 +716,7 @@ function Confirmation({ s, onNew }: { s: Saved; onNew: () => void }) {
         Thanks. It’s with us.
       </h1>
       <p className="mt-2 text-[16px] text-ink-2">
-        Research usually takes about 10 minutes. You can close this page: your results will appear on your request page.
+        Research usually takes about 10 minutes. Save the link below, then you can close this page: your results will appear there.
       </p>
 
       <div className="mt-8 rounded-2xl border border-line bg-surface p-5 sm:p-6">
@@ -725,7 +725,7 @@ function Confirmation({ s, onNew }: { s: Saved; onNew: () => void }) {
           <span className="font-medium text-ink">{pickedUp ? "Research has started" : "Saved and queued for research"}</span>
         </div>
         <p className="mt-4 text-sm text-ink-2">
-          <strong className="text-ink">Save this link.</strong> It’s how you get back to your request.
+          <strong className="text-ink">Save this link.</strong> It’s private to you, and it’s the only way back to your results{sub.email ? "" : " unless you add your email"}.
         </p>
         <div className="mt-2">
           <CopyLink path={sub.statusPath} />
