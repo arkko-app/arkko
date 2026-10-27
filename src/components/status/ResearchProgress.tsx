@@ -33,9 +33,11 @@ export function ResearchProgress({ rec }: { rec: RequestRecord }) {
       {p.state === "failed" ? (
         <div role="alert" className="mt-4 flex items-start gap-3 rounded-xl border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger">
           <Icon name="alert" size={16} className="mt-0.5 shrink-0" />
-          {p.willRetry
-            ? "Something went wrong while researching your brief. We’ll try again automatically, usually within two hours. Your brief is safe and you don’t need to do anything."
-            : "Something went wrong and we couldn’t finish your research automatically. It has been logged for our team. Your brief is safe and you don’t need to do anything."}
+          {p.paused
+            ? "Your research is paused while we fix a problem on our side. It will start again automatically once that’s done. Your brief is safe and you don’t need to do anything."
+            : p.willRetry
+              ? "Something went wrong while researching your brief. We’ll try again automatically, usually within two hours. Your brief is safe and you don’t need to do anything."
+              : "Something went wrong and we couldn’t finish your research automatically. It has been logged for our team. Your brief is safe and you don’t need to do anything."}
         </div>
       ) : p.state === "queued" ? (
         <p className="mt-4 text-sm text-ink-2">Your brief is in the queue. The research team usually starts within a minute or two.</p>
