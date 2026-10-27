@@ -11,6 +11,8 @@ import heroPainting from "../../public/brand/hero-painting.jpg";
 import evaluationBoard from "../../public/brand/dashboards/evaluation.png";
 import scorecardBoard from "../../public/brand/dashboards/scorecard.png";
 import researchBoard from "../../public/brand/dashboards/research.png";
+import evaluationDetailBoard from "../../public/brand/dashboards/evaluation-detail.png";
+import coverageBoard from "../../public/brand/dashboards/coverage.png";
 import terraceSpritz from "../../public/brand/terrace-spritz.jpg";
 import snackBar from "../../public/brand/snack-bar.jpg";
 import teaSamples from "../../public/brand/tea-samples.jpg";
@@ -212,9 +214,11 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <div className="flex flex-wrap gap-4">
-            <Dashboard src={scorecardBoard} label={h.dashboards.scorecard.label} alt={h.dashboards.scorecard.alt} className="flex-[1_1_420px]" />
-            <Dashboard src={researchBoard} label={h.dashboards.research.label} alt={h.dashboards.research.alt} className="flex-[1_1_420px]" />
+          <div className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2">
+            <Dashboard src={scorecardBoard} label={h.dashboards.scorecard.label} alt={h.dashboards.scorecard.alt} />
+            <Dashboard src={evaluationDetailBoard} label={h.dashboards.evaluationDetail.label} alt={h.dashboards.evaluationDetail.alt} />
+            <Dashboard src={researchBoard} label={h.dashboards.research.label} alt={h.dashboards.research.alt} />
+            <Dashboard src={coverageBoard} label={h.dashboards.coverage.label} alt={h.dashboards.coverage.alt} />
           </div>
           <p className="font-mono text-[12px] text-ink-2">{h.dashboards.note}</p>
         </section>

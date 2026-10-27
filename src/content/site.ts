@@ -52,7 +52,9 @@ export const site = {
       open: "Open full size",
       evaluation: { label: "The evaluation", alt: "Example evaluation dashboard for a fictional drink, Afternoon Lift: four engine gauges for structural market, cultural momentum, consumer fit and competitive white space, with component dials, an adoption path, gates and constraints." },
       scorecard: { label: "The scorecard", alt: "Example evaluation scorecard for Afternoon Lift: engine scores against their maximums, a heatmap of 24 components, gates and constraint severity." },
+      evaluationDetail: { label: "Every component, scored", alt: "Example evaluation detail for Afternoon Lift: each of the 24 components with its score, status and confidence, an adoption diagnosis from notice to repeat, gates and commercial constraints." },
       research: { label: "The research", alt: "Example research coverage for Afternoon Lift: how many of the 24 components have direct evidence, a coverage map, evidence packets and open follow-up requests." },
+      coverage: { label: "Evidence coverage", alt: "Example evidence summary for Afternoon Lift: verification by research area, a coverage heatmap of direct, indirect and missing evidence, and what still needs evidence." },
     },
     categories: ["Beverage opportunities", "Food & snack opportunities", "Flavor & format exploration"],
     get: {
