@@ -135,7 +135,7 @@ export default function Home() {
           </section>
         </div>
 
-        {/* Why arkko: experience and differentiation, reversed */}
+        {/* Why Arkko: experience and differentiation, reversed */}
         <section id="why" className="scroll-mt-4 bg-espresso text-bg">
           <div className={`${container} flex flex-col gap-12 py-24`}>
             <div className="flex flex-wrap items-end gap-12">
@@ -180,7 +180,7 @@ export default function Home() {
         </section>
 
         {/* Categories photo band */}
-        <section aria-label="Categories arkko works across" className={`${container} pt-6 pb-14`}>
+        <section aria-label="Categories Arkko works across" className={`${container} pt-6 pb-14`}>
           <div className="flex flex-wrap items-start gap-4">
             {CATEGORY_IMAGES.map((img, i) => (
               <figure key={h.categories[i]} className={`flex min-w-0 flex-[1_1_300px] flex-col gap-2.5 ${i === 1 ? "sm:pt-12" : ""}`}>

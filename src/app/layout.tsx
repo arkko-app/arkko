@@ -8,8 +8,9 @@ const sans = Plus_Jakarta_Sans({ variable: "--font-jakarta", subsets: ["latin"] 
 const mono = JetBrains_Mono({ variable: "--font-jetbrains", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Arkko — Build your insurgent advantage",
-  description: "Your innovation AI. Sharpen your thinking, pressure-test potential, and focus your next investment.",
+  title: "Arkko — Which ideas deserve your next investment?",
+  description:
+    "Arkko helps food and beverage teams turn early ideas into clear propositions, research their potential, and evaluate the evidence.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

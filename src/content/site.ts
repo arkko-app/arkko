@@ -13,7 +13,7 @@ export const site = {
     /** Second call to action: try arkko by giving a brief (chat or form). */
     demo: "Demo",
     nav: [
-      { href: "#why", label: "Why arkko" },
+      { href: "#why", label: "Why Arkko" },
       { href: "#get", label: "What you get" },
       { href: "#how", label: "How it works" },
       { href: "#example", label: "Example" },
@@ -24,7 +24,7 @@ export const site = {
       body: "Arkko helps food and beverage teams turn early ideas into clear propositions, research their potential, and evaluate the evidence—so your team can decide what to advance, investigate further, or park.",
     },
     why: {
-      eyebrow: "Why arkko",
+      eyebrow: "Why Arkko",
       title: "Powered by AI. Grounded in 20+ years of CPG innovation experience.",
       body: [
         "Arkko’s frameworks turn CPG innovation experience into a structured approach to researching and evaluating your idea, from consumer needs and market conditions to competition and commercial requirements.",
@@ -60,23 +60,23 @@ export const site = {
       title: "From an early idea to a structured assessment.",
       items: [
         { title: "A structured idea", body: "Clarify who it is for, the need it addresses, what it offers, and why someone would choose it." },
-        { title: "A framework-led evaluation", body: "Examine the idea’s potential through arkko’s CPG innovation frameworks, with its strengths, weaknesses, and assumptions brought into view." },
+        { title: "A framework-led evaluation", body: "Examine the idea’s potential through Arkko’s CPG innovation frameworks, with its strengths, weaknesses, and assumptions brought into view." },
         { title: "Priorities for validation", body: "Understand the unresolved questions and what needs further investigation before moving forward." },
       ],
     },
     example: {
       eyebrow: "Example",
-      title: "See what arkko brings to the idea.",
+      title: "See what Arkko brings to the idea.",
       body: "Explore a sample structured idea and evaluation—from the initial proposition to the questions that need answering next.",
       note: "Illustrative example · fictional brand · no consumer testing conducted",
       fullLink: "View the full sample evaluation",
-      tabs: { idea: "The starting idea", structured: "How arkko structured it", evaluation: "The evaluation", validate: "What to validate next" },
+      tabs: { idea: "The starting idea", structured: "How Arkko structured it", evaluation: "The evaluation", validate: "What to validate next" },
       idea: {
         label: "The starting idea, as submitted",
         quote: "A lighter afternoon drink for people who want a lift without reaching for an energy drink.",
         context: "Brand: VELA, a challenger beverage brand. Context: looking for a new occasion beyond morning coffee alternatives.",
         asideTitle: "Where most ideas start",
-        aside: "A promising instinct, but the consumer, the need and the reason to switch are still implicit. That is what arkko structures next.",
+        aside: "A promising instinct, but the consumer, the need and the reason to switch are still implicit. That is what Arkko structures next.",
       },
       structured: {
         label: "Structured idea",
@@ -112,10 +112,10 @@ export const site = {
     },
     how: {
       eyebrow: "How it works",
-      title: "Start with your idea. Stay involved as it takes shape.",
+      title: "Start with your idea. Get a research-backed assessment.",
       steps: [
-        { title: "Share your brief", body: "Tell arkko about your idea, brand, business context, and constraints." },
-        { title: "Review the structured idea", body: "Clarify the proposition and refine the direction." },
+        { title: "Share your brief", body: "Tell Arkko about your idea, brand, business context, and constraints." },
+        { title: "Arkko researches it", body: "The market, consumers, competition and feasibility, with sources behind every finding." },
         { title: "Explore the evaluation", body: "Review the idea’s strengths, weaknesses, assumptions, and open questions." },
         { title: "Plan what to validate next", body: "Use the assessment to guide further investigation and discussion." },
       ],
