@@ -24,6 +24,11 @@ export const config = {
     process.env.OTTO_DISPATCH_REPO && process.env.OTTO_DISPATCH_TOKEN
       ? { repo: process.env.OTTO_DISPATCH_REPO, token: process.env.OTTO_DISPATCH_TOKEN }
       : undefined,
+  /**
+   * Most briefs that can be submitted per day (UTC), across all customers. Each brief starts a paid
+   * research run, so this caps the daily Claude spend if the site is spammed. 0 turns the limit off.
+   */
+  dailyBriefLimit: Number(process.env.ARKKO_DAILY_BRIEF_LIMIT ?? 20),
   /** The intake chat uses Claude when an API key is set; otherwise it asks the form's questions one by one. */
   chatEnabled: !!process.env.ANTHROPIC_API_KEY,
   /** Store data in Airtable when both are set; otherwise use the local JSON store. */

@@ -21,6 +21,7 @@ export const listRequests = () => store.listRequests();
 export const getRequest = (id: string) => store.getRequest(id);
 export const getByResultsToken = (token: string) => store.getByResultsToken(token);
 export const peekByResultsToken = (token: string) => store.peekByResultsToken(token);
+export const countSubmittedSince = (since: string) => store.countSubmittedSince(since);
 export const insertRequest: Store["insertRequest"] = (rec) => store.insertRequest(rec);
 export const updateRequest: Store["updateRequest"] = (id, mutate) => store.updateRequest(id, mutate);
 export const updateRequestAndNotify: Store["updateRequestAndNotify"] = (id, mutate) =>

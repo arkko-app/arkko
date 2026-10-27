@@ -60,6 +60,10 @@ export const fileStore: Store = {
     return (await load()).requests.find((r) => r.resultsToken === token);
   },
 
+  async countSubmittedSince(since) {
+    return (await load()).requests.filter((r) => r.submittedAt && r.submittedAt >= since).length;
+  },
+
   async peekByResultsToken(token) {
     const r = (await load()).requests.find((r) => r.resultsToken === token);
     return r && { status: r.status, updatedAt: r.updatedAt };

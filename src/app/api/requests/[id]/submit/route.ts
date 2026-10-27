@@ -1,9 +1,18 @@
 import { fail, hasDraftAccess, json } from "@/lib/http";
 import { missingRequired } from "@/lib/intake";
 import { emailSchema } from "@/lib/schema";
-import { getRequest, now, updateRequest } from "@/lib/db";
+import { config } from "@/lib/config";
+import { countSubmittedSince, getRequest, now, updateRequest } from "@/lib/db";
 import { handOff } from "@/lib/otto";
 import { publicStatus } from "@/lib/status";
+
+/** Every submitted brief starts a paid research run, so submissions are capped per UTC day. */
+async function dailyLimitReached() {
+  if (config.dailyBriefLimit <= 0) return false;
+  const midnight = new Date();
+  midnight.setUTCHours(0, 0, 0, 0);
+  return (await countSubmittedSince(midnight.toISOString())) >= config.dailyBriefLimit;
+}
 
 /**
  * Submit the brief and hand it to Otto. The email is optional: it is only
@@ -23,6 +32,8 @@ export async function POST(req: Request, ctx: RouteContext<"/api/requests/[id]/s
   if (email && !email.success) return fail(400, "Enter a valid email address");
   const missing = missingRequired(rec.answers);
   if (missing.length) return fail(400, "Some required answers are missing", { missing });
+  if (await dailyLimitReached())
+    return fail(429, "We’ve reached today’s limit for new briefs. Your brief is saved here, so please submit it again tomorrow.");
 
   const submitted = await updateRequest(id, (r) => {
     if (r.status !== "draft") return; // lost a race with a concurrent retry

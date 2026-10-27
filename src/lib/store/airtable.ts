@@ -475,6 +475,11 @@ export const airtableStore: Store = {
     return (await loadWhere(eq("Access token hash", sha(token))))?.rec;
   },
 
+  async countSubmittedSince(since) {
+    await ensureSeeded();
+    return (await list(T.requests, `AND({Submitted at}, NOT(IS_BEFORE({Submitted at}, '${esc(since)}')))`)).length;
+  },
+
   async peekByResultsToken(token) {
     await ensureSeeded();
     const [row] = await list(T.requests, eq("Access token hash", sha(token)));
