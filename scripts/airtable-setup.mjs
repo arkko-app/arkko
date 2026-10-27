@@ -131,6 +131,18 @@ const TABLES = [
       date("Handled at"),
     ],
   },
+  {
+    name: "Contacts",
+    description: "Messages sent through the contact form on the home page.",
+    fields: () => [
+      text("Contact ID"),
+      text("Name"),
+      { name: "Email", type: "email" },
+      text("Company"),
+      long("Message"),
+      date("Created at"),
+    ],
+  },
 ];
 
 const { tables } = await api("/tables");

@@ -2,7 +2,7 @@ import "server-only";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { config } from "../config";
-import type { OttoNotification, RequestRecord } from "../types";
+import type { ContactMessage, OttoNotification, RequestRecord } from "../types";
 import { newId, now } from "../ids";
 import { seedRecords } from "../seed";
 import type { Store } from "./types";
@@ -15,6 +15,7 @@ const DB_FILE = path.join(DATA_DIR, "db.json");
 interface DB {
   requests: RequestRecord[];
   notifications: OttoNotification[];
+  contacts: ContactMessage[];
 }
 
 let queue: Promise<unknown> = Promise.resolve();
@@ -30,11 +31,12 @@ async function load(): Promise<DB> {
   try {
     const db = JSON.parse(await fs.readFile(DB_FILE, "utf8")) as DB;
     db.notifications ??= [];
+    db.contacts ??= [];
     db.requests.forEach((r) => (r.reviews ??= []));
     return db;
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code !== "ENOENT") throw err;
-    const db: DB = { requests: seedRecords(), notifications: [] };
+    const db: DB = { requests: seedRecords(), notifications: [], contacts: [] };
     await save(db);
     return db;
   }
@@ -118,6 +120,14 @@ export const fileStore: Store = {
       n.ackedAt ??= now();
       await save(db);
       return n;
+    });
+  },
+
+  insertContact(c) {
+    return exclusive(async () => {
+      const db = await load();
+      db.contacts.push(c);
+      await save(db);
     });
   },
 };

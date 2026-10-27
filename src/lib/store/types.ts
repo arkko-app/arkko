@@ -1,4 +1,4 @@
-import type { OttoNotification, RequestRecord } from "../types";
+import type { ContactMessage, OttoNotification, RequestRecord } from "../types";
 
 export type NotificationInput = Omit<OttoNotification, "id" | "requestId" | "createdAt">;
 
@@ -23,6 +23,7 @@ export interface Store {
     mutate: (r: RequestRecord) => NotificationInput | void,
   ): Promise<{ rec: RequestRecord; notification?: OttoNotification } | undefined>;
   listNotifications(): Promise<OttoNotification[]>;
+  insertContact(c: ContactMessage): Promise<void>;
   ackNotification(id: string): Promise<OttoNotification | undefined>;
   /** Fallback for files missing from local disk (e.g. on a fresh server). */
   readRemoteFile?(requestId: string, name: string): Promise<Buffer | undefined>;

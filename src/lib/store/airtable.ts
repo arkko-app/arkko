@@ -34,6 +34,7 @@ const T = {
   reviews: "Reviews",
   results: "Results",
   notifications: "Notifications",
+  contacts: "Contacts",
 } as const;
 
 /** Intake question ids shown as their own columns, for people browsing the base. */
@@ -517,6 +518,19 @@ export const airtableStore: Store = {
       ]);
     }
     return { rec: out.loaded.rec, notification };
+  },
+
+  async insertContact(c) {
+    await create(T.contacts, [
+      {
+        "Contact ID": c.id,
+        Name: c.name,
+        Email: c.email,
+        Company: c.company ?? null,
+        Message: c.message,
+        "Created at": c.createdAt,
+      },
+    ]);
   },
 
   async listNotifications() {

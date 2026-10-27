@@ -27,6 +27,7 @@ export const updateRequest: Store["updateRequest"] = (id, mutate) => store.updat
 export const updateRequestAndNotify: Store["updateRequestAndNotify"] = (id, mutate) =>
   store.updateRequestAndNotify(id, mutate);
 export const listNotifications = () => store.listNotifications();
+export const insertContact: Store["insertContact"] = (c) => store.insertContact(c);
 export const ackNotification = (id: string) => store.ackNotification(id);
 
 export const FILES_DIR = path.join(config.dataDir, "files");

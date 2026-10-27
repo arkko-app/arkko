@@ -54,6 +54,16 @@ export interface OttoNotification {
   ackedAt?: string;
 }
 
+/** A message sent through the contact form on the home page. */
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  company?: string;
+  message: string;
+  createdAt: string;
+}
+
 export interface StoredFile {
   id: string;
   name: string; // stored filename on disk

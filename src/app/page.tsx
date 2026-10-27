@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
 import { site } from "@/content/site";
 import { DEMO_TOKEN } from "@/lib/seed";
@@ -8,7 +8,9 @@ import { ContinueRequest } from "@/components/site/ContinueRequest";
 import { ExampleTabs } from "@/components/home/ExampleTabs";
 import introLogo from "../../public/brand/intro-logo.jpg";
 import heroPainting from "../../public/brand/hero-painting.jpg";
-import teamReview from "../../public/brand/team-review.jpg";
+import evaluationBoard from "../../public/brand/dashboards/evaluation.png";
+import scorecardBoard from "../../public/brand/dashboards/scorecard.png";
+import researchBoard from "../../public/brand/dashboards/research.png";
 import terraceSpritz from "../../public/brand/terrace-spritz.jpg";
 import snackBar from "../../public/brand/snack-bar.jpg";
 import teaSamples from "../../public/brand/tea-samples.jpg";
@@ -17,7 +19,9 @@ import swatches from "../../public/brand/swatches-windowsill.jpg";
 import studioWindow from "../../public/brand/studio-window.jpg";
 
 const h = site.home;
-const START = "/start";
+/** "Talk to arkko" opens the contact form; "Demo" lets visitors try arkko by giving a brief. */
+const CONTACT = "/contact";
+const DEMO = "/start";
 
 const GAIN_TONE: Record<string, string> = {
   pistachio: "bg-pistachio",
@@ -37,6 +41,29 @@ const sectionTitle = "font-serif text-[clamp(38px,4.4vw,60px)] font-black leadin
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return <p className="eyebrow">{children}</p>;
+}
+
+/** An illustrative dashboard, cropped to its top; opens full size so the detail can be read. */
+function Dashboard({ src, label, alt, className = "" }: { src: StaticImageData; label: string; alt: string; className?: string }) {
+  return (
+    <figure className={`flex min-w-0 flex-col gap-2.5 ${className}`}>
+      <a href={src.src} target="_blank" rel="noopener" className="group block overflow-hidden rounded-lg border-[1.5px] border-ink">
+        <Image
+          src={src}
+          alt={alt}
+          placeholder="blur"
+          sizes="(min-width: 1200px) 1152px, 100vw"
+          className="block aspect-[16/10] w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
+        />
+      </a>
+      <figcaption className="flex flex-wrap justify-between gap-2 font-mono text-[12px] uppercase tracking-[0.06em]">
+        <span>{label}</span>
+        <a href={src.src} target="_blank" rel="noopener" className="underline underline-offset-4">
+          {h.dashboards.open} ↗
+        </a>
+      </figcaption>
+    </figure>
+  );
 }
 
 export default function Home() {
@@ -74,7 +101,8 @@ export default function Home() {
                   {n.label}
                 </a>
               ))}
-              <ButtonLink href={START}>{h.cta}</ButtonLink>
+              <ButtonLink href={DEMO} variant="secondary">{h.demo}</ButtonLink>
+              <ButtonLink href={CONTACT}>{h.cta}</ButtonLink>
             </nav>
           </header>
           <ContinueRequest />
@@ -89,17 +117,17 @@ export default function Home() {
                 className="block h-[clamp(360px,52vw,760px)] w-full rounded-lg border-[1.5px] border-ink object-cover min-[861px]:ml-auto min-[861px]:w-3/4"
               />
               <div className="relative mx-4 -mt-24 flex flex-col gap-5 rounded-lg border-[1.5px] border-ink bg-surface p-[clamp(28px,3.6vw,52px)] min-[861px]:absolute min-[861px]:top-1/2 min-[861px]:left-0 min-[861px]:mx-0 min-[861px]:mt-0 min-[861px]:w-[min(600px,48%)] min-[861px]:-translate-y-1/2">
+                <Eyebrow>{h.hero.eyebrow}</Eyebrow>
                 <h1 className="font-serif text-[clamp(40px,4.4vw,66px)] font-black leading-[0.98] tracking-[-0.03em] text-balance">
                   {h.hero.title}
                 </h1>
-                <p className="text-[21px] font-bold leading-snug">{h.hero.lead}</p>
                 <p className="text-[18px] leading-normal">{h.hero.body}</p>
                 <div className="flex flex-wrap gap-3 pt-1">
-                  <ButtonLink href={START} className="h-auto px-[22px] py-3.5 text-[15px]">
+                  <ButtonLink href={CONTACT} className="h-auto px-[22px] py-3.5 text-[15px]">
                     {h.cta} <Icon name="arrowRight" size={15} />
                   </ButtonLink>
-                  <ButtonLink href="#example" variant="secondary" className="h-auto px-[22px] py-3.5 text-[15px]">
-                    {h.hero.secondary}
+                  <ButtonLink href={DEMO} variant="secondary" className="h-auto px-[22px] py-3.5 text-[15px]">
+                    {h.demo}
                   </ButtonLink>
                 </div>
               </div>
@@ -121,13 +149,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <Image
-              src={teamReview}
-              alt="A team reviewing idea cards, botanicals and an evaluation on a laptop around a stone table"
-              placeholder="blur"
-              sizes="(min-width: 1200px) 1152px, 100vw"
-              className="block h-[clamp(260px,34vw,460px)] w-full rounded-lg object-cover"
-            />
+            <Dashboard src={evaluationBoard} label={`${h.dashboards.evaluation.label} · ${h.dashboards.note}`} alt={h.dashboards.evaluation.alt} />
             <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4">
               {h.why.points.map((p, i) => (
                 <div key={p.title} className="flex flex-col gap-2.5 rounded-lg border-[1.5px] border-bg p-6">
@@ -145,6 +167,7 @@ export default function Home() {
           <div className="flex max-w-[760px] flex-col gap-4">
             <Eyebrow>{h.gain.eyebrow}</Eyebrow>
             <h2 className={sectionTitle}>{h.gain.title}</h2>
+            <p className="text-[18px]">{h.gain.body}</p>
           </div>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-4">
             {h.gain.cards.map((c) => (
@@ -189,6 +212,11 @@ export default function Home() {
               </div>
             ))}
           </div>
+          <div className="flex flex-wrap gap-4">
+            <Dashboard src={scorecardBoard} label={h.dashboards.scorecard.label} alt={h.dashboards.scorecard.alt} className="flex-[1_1_420px]" />
+            <Dashboard src={researchBoard} label={h.dashboards.research.label} alt={h.dashboards.research.alt} className="flex-[1_1_420px]" />
+          </div>
+          <p className="font-mono text-[12px] text-ink-2">{h.dashboards.note}</p>
         </section>
 
         {/* Interactive example */}
@@ -237,31 +265,8 @@ export default function Home() {
           </ol>
         </section>
 
-        {/* The experience behind it */}
-        <section className={`${container} pt-14 pb-[104px]`}>
-          <div className="flex flex-wrap items-center gap-12 rounded-lg bg-surface-2 p-[clamp(24px,4vw,56px)]">
-            <div
-              role="img"
-              aria-label="Founder photograph placeholder"
-              className="flex aspect-[4/5] min-w-[220px] flex-[0_1_300px] items-center justify-center rounded-lg border-[1.5px] border-dashed border-ink bg-surface p-4 text-center font-mono text-[12px] text-ink-2"
-            >
-              {h.founder.photo}
-            </div>
-            <div className="flex min-w-0 flex-[1_1_420px] flex-col gap-[18px]">
-              <Eyebrow>{h.founder.eyebrow}</Eyebrow>
-              <h2 className="font-serif text-[clamp(34px,3.8vw,52px)] font-black leading-none tracking-[-0.03em] text-balance">{h.founder.title}</h2>
-              <p className="text-[17px]">{h.founder.body}</p>
-              <div className="flex flex-col gap-1.5 border-t-[1.5px] border-ink pt-[18px]">
-                <p className="text-[18px] font-bold">{h.founder.name}</p>
-                <p className="text-[15px] text-ink-2">{h.founder.bio}</p>
-              </div>
-              <p className="font-mono text-[12px] text-ink-2">{h.founder.proof}</p>
-            </div>
-          </div>
-        </section>
-
         {/* FAQ */}
-        <section className={`${container} flex flex-wrap items-start gap-12 pb-[104px]`}>
+        <section className={`${container} flex flex-wrap items-start gap-12 pt-14 pb-[104px]`}>
           <Image
             src={swatches}
             alt="Color swatches clipped along a sunny stone windowsill beside an open notebook"
@@ -300,12 +305,20 @@ export default function Home() {
                 <h2 className="font-serif text-[clamp(36px,4.6vw,64px)] font-black leading-[0.98] tracking-[-0.03em] text-balance">{h.closing.title}</h2>
                 <p className="max-w-[560px] text-[18px]">{h.closing.body}</p>
               </div>
-              <Link
-                href={START}
-                className="inline-flex items-center gap-2 rounded-lg border-[1.5px] border-ink bg-ink px-[26px] py-4 text-[16px] font-bold text-bg transition-transform hover:-rotate-1"
-              >
-                {h.cta} <Icon name="arrowRight" size={16} />
-              </Link>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href={CONTACT}
+                  className="inline-flex items-center gap-2 rounded-lg border-[1.5px] border-ink bg-ink px-[26px] py-4 text-[16px] font-bold text-bg transition-transform hover:-rotate-1"
+                >
+                  {h.cta} <Icon name="arrowRight" size={16} />
+                </Link>
+                <Link
+                  href={DEMO}
+                  className="inline-flex items-center gap-2 rounded-lg border-[1.5px] border-ink bg-surface px-[26px] py-4 text-[16px] font-bold text-ink transition-transform hover:-rotate-1"
+                >
+                  {h.demo}
+                </Link>
+              </div>
             </div>
           </div>
         </section>

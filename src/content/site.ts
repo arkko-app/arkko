@@ -6,9 +6,12 @@
 export const site = {
   name: "arkko",
   tagline: "Build your insurgent advantage.",
-  /** Home page copy, from the project owner's design (Oct 2026). Bracketed text is a placeholder awaiting real content. */
+  /** Home page copy, from the project owner's design and copy changes (Oct 2026). */
   home: {
+    /** Main call to action: leads to the contact form. */
     cta: "Talk to arkko",
+    /** Second call to action: try arkko by giving a brief (chat or form). */
+    demo: "Demo",
     nav: [
       { href: "#why", label: "Why arkko" },
       { href: "#get", label: "What you get" },
@@ -16,33 +19,40 @@ export const site = {
       { href: "#example", label: "Example" },
     ],
     hero: {
-      title: "Your innovation AI. Built for your insurgent advantage.",
-      lead: "Your ideas. Supercharged.",
-      body: "A purpose-built innovation AI to sharpen your thinking, pressure-test potential, and focus your next investment.",
-      secondary: "Explore an example",
+      eyebrow: "Your AI-powered innovation partner",
+      title: "Which ideas deserve your next investment?",
+      body: "Arkko helps food and beverage teams turn early ideas into clear propositions, research their potential, and evaluate the evidence—so your team can decide what to advance, investigate further, or park.",
     },
     why: {
       eyebrow: "Why arkko",
-      title: "AI is the engine. CPG experience shapes the approach.",
+      title: "Powered by AI. Grounded in 20+ years of CPG innovation experience.",
       body: [
-        "arkko’s frameworks were developed through more than 20 years of CPG innovation experience. They guide how an idea is defined, which questions are examined, and how its strengths, risks, and unanswered questions are assessed.",
-        "You bring your idea and business context. arkko brings a structured approach to working through the opportunity.",
+        "Arkko’s frameworks turn CPG innovation experience into a structured approach to researching and evaluating your idea, from consumer needs and market conditions to competition and commercial requirements.",
+        "The assessment brings together supporting evidence, findings that challenge your assumptions, and questions that still need answers. Your team brings the brand and category expertise to interpret what it means.",
       ],
       points: [
-        { title: "The questions to ask", body: "Bring structure to the consumer need, proposition, and reasons someone would choose the idea." },
-        { title: "The assumptions to examine", body: "Make the underlying thinking visible so it can be discussed and challenged." },
-        { title: "The next questions to resolve", body: "Identify where more evidence or testing is needed before advancing." },
+        { title: "The questions that matter", body: "Examine consumer demand, market attractiveness, competitive advantage, and the practical requirements of bringing the idea to market." },
+        { title: "Evidence, not just confirmation", body: "Explore what supports the idea and what challenges it, with sources and reasoning behind the assessment." },
+        { title: "Clarity about what’s unknown", body: "See where evidence is limited, conclusions are provisional, and further research or testing is needed." },
       ],
     },
     gain: {
       eyebrow: "What you gain",
-      title: "A clearer idea. A better-informed next move.",
+      title: "Less time scoping. More clarity on what deserves investment.",
+      body: "Give your team the research and structure to assess early ideas before committing to deeper development.",
       cards: [
-        { title: "Sharpen the proposition", body: "Turn an early thought into an idea your team can understand, examine, and refine.", tone: "pistachio" },
-        { title: "Challenge the assumptions", body: "Bring weaknesses and uncertainties into the conversation alongside the opportunity.", tone: "pomelo" },
-        { title: "Focus the next investment", body: "Identify what needs further investigation before committing more time and resources.", tone: "amber" },
-        { title: "Create a shared basis for discussion", body: "Give your team a structured idea and evaluation to work from.", tone: "sand" },
+        { title: "Get to the discussion faster", body: "Bring a clearly defined idea and a research-backed assessment to the table—so your team can spend more time discussing the opportunity, not assembling the starting point.", tone: "pistachio" },
+        { title: "See the strengths and the risks", body: "Understand what supports the idea, what challenges it, and where the evidence is still too limited to draw a conclusion.", tone: "pomelo" },
+        { title: "Focus your next investment", body: "Use the assessment alongside your team’s expertise to decide what to advance, what to investigate further, and what to park.", tone: "amber" },
       ],
+    },
+    /** Illustrative dashboards for a fictional concept, shown in "Why arkko" and "What you get". */
+    dashboards: {
+      note: "Illustrative dashboards · fictional concept",
+      open: "Open full size",
+      evaluation: { label: "The evaluation", alt: "Example evaluation dashboard for a fictional drink, Afternoon Lift: four engine gauges for structural market, cultural momentum, consumer fit and competitive white space, with component dials, an adoption path, gates and constraints." },
+      scorecard: { label: "The scorecard", alt: "Example evaluation scorecard for Afternoon Lift: engine scores against their maximums, a heatmap of 24 components, gates and constraint severity." },
+      research: { label: "The research", alt: "Example research coverage for Afternoon Lift: how many of the 24 components have direct evidence, a coverage map, evidence packets and open follow-up requests." },
     },
     categories: ["Beverage opportunities", "Food & snack opportunities", "Flavor & format exploration"],
     get: {
@@ -110,24 +120,25 @@ export const site = {
         { title: "Plan what to validate next", body: "Use the assessment to guide further investigation and discussion." },
       ],
     },
-    founder: {
-      eyebrow: "The experience behind it",
-      title: "Built from CPG innovation experience.",
-      body: "arkko’s frameworks were developed through more than 20 years of CPG innovation experience—bringing an experienced approach to how brands structure and assess new ideas.",
-      name: "Pedro Merizalde",
-      photo: "[Founder photograph]",
-      bio: "[Approved biography: relevant roles, categories and areas of innovation experience that can be publicly substantiated]",
-      proof: "[Authorized company logos or testimonials, if available]",
-    },
     faq: {
       title: "Questions, answered plainly.",
       items: [
-        { q: "Why use arkko instead of a general AI tool?", a: "arkko provides a purpose-built approach to structuring and evaluating CPG innovation ideas. Its experience-developed frameworks guide the questions, assessment, and output, so you do not have to design the process from scratch." },
-        { q: "What can I use arkko for today?", a: "arkko currently supports idea structuring and evaluation. Its broader ambition is to support more of the innovation journey over time." },
-        { q: "Does an evaluation prove that an idea will succeed?", a: "No. An evaluation helps you understand an idea’s potential, assumptions, and unanswered questions. It does not replace consumer testing, technical development, or commercial validation." },
-        { q: "What do I need to get started?", a: "[Answer from the real intake requirements]" },
-        { q: "Who owns my ideas, and how is my information handled?", a: "[Answer after reviewing the actual terms, provider agreements and data-handling practices]" },
+        { q: "Why use Arkko instead of a general AI tool?", a: "Arkko gives your team a ready-built process for researching and evaluating food and beverage ideas. Its frameworks, developed through more than 20 years of CPG innovation experience, guide the questions, research, and assessment—so your team does not have to design the process from scratch." },
+        { q: "What can I use Arkko for today?", a: "Use Arkko to turn an early food or beverage idea into a clear proposition, research its potential, and assess its strengths, risks, and unanswered questions. It helps your team decide what to advance, investigate further, or park." },
+        { q: "What does Arkko research?", a: "Arkko examines consumer needs and behavior, market conditions, competitors and substitutes, and commercial requirements such as manufacturing, channel access, and costs." },
+        { q: "Does an evaluation prove that an idea will succeed?", a: "No. Arkko provides an evidence-based assessment—not a prediction or guarantee of success. It helps identify what looks promising and what still needs testing. It does not replace consumer research, product testing, technical development, or commercial validation." },
+        { q: "What do the scores mean?", a: "Scores summarize how the available evidence aligns with Arkko’s evaluation criteria. They are not probabilities of success. Where evidence is limited, an assessment may be provisional or a criterion may remain unscored." },
       ],
+    },
+    contact: {
+      eyebrow: "Talk to arkko",
+      title: "Tell us about your next idea.",
+      body: "Leave a few details and we’ll get back to you.",
+      demoLink: "Or see it work first: try the demo",
+      fields: { name: "Your name", email: "Work email", company: "Company (optional)", message: "What would you like to talk about?" },
+      send: "Send message",
+      sentTitle: "Thanks, your message is with us.",
+      sentBody: "We’ll reply by email soon.",
     },
     closing: {
       title: "Give your next idea a more experienced starting point.",
