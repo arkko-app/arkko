@@ -225,10 +225,9 @@ export function Brief() {
 /* ---------------------------------------------------------------- */
 
 function FindingCard({ f }: { f: Finding }) {
-  const { data, presenting } = useShowcase();
+  const { data } = useShowcase();
   const [open, setOpen] = useState(false);
   const chart = f.chartId ? data.payload.charts?.find((c) => c.id === f.chartId) : undefined;
-  const expandable = !!f.detail || (!!chart && !presenting);
   return (
     <div className={`rounded-2xl border bg-surface p-5 ${f.kind === "assumption" ? "border-dashed border-line-strong" : "border-line"}`}>
       <div className="flex flex-wrap items-center gap-2">
@@ -237,12 +236,13 @@ function FindingCard({ f }: { f: Finding }) {
       </div>
       <h3 className="mt-3 font-serif text-[20px] font-semibold text-ink">{f.title}</h3>
       <p className="mt-1.5 text-[15px] leading-relaxed text-ink-2">{f.summary}</p>
-      {presenting && chart && (
+      {/* The data behind a finding is shown with it, not behind a toggle. */}
+      {chart && (
         <div className="mt-4">
           <Chart chart={chart} cite={<SourceRefs ids={chart.sourceIds} />} />
         </div>
       )}
-      {expandable && (
+      {f.detail && (
         <>
           <button
             type="button"
@@ -250,15 +250,10 @@ function FindingCard({ f }: { f: Finding }) {
             aria-expanded={open}
             className="mt-3 inline-flex items-center gap-1 text-[13px] font-semibold text-brand-text"
           >
-            {open ? "Hide detail" : chart ? "Show detail and data" : "Show detail"}
+            {open ? "Hide detail" : "Show detail"}
             <Icon name="chevronDown" size={14} className={open ? "rotate-180" : ""} />
           </button>
-          {open && (
-            <div className="mt-3 space-y-4">
-              {f.detail && <p className="text-sm leading-relaxed text-ink-2">{f.detail}</p>}
-              {chart && !presenting && <Chart chart={chart} cite={<SourceRefs ids={chart.sourceIds} />} />}
-            </div>
-          )}
+          {open && <p className="mt-3 text-sm leading-relaxed text-ink-2">{f.detail}</p>}
         </>
       )}
     </div>

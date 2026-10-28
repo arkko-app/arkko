@@ -16,7 +16,46 @@ function niceMax(v: number) {
   return step * pow;
 }
 
-const fmt = (v: number) => (Number.isInteger(v) ? v.toLocaleString() : v.toLocaleString(undefined, { maximumFractionDigits: 1 }));
+/** Enough decimals to tell small values apart (0.545, 13.05), none on large ones. */
+const fmt = (v: number) => {
+  const a = Math.abs(v);
+  return v.toLocaleString(undefined, { maximumFractionDigits: a === 0 || a >= 100 ? 0 : a < 1 ? 3 : 2 });
+};
+
+/** A value as read on the chart: with its unit when the unit is a symbol such as %. */
+const withUnit = (v: number, unit: string) => (unit.trim() === "%" ? `${fmt(v)}%` : fmt(v));
+
+/**
+ * Comparison bars run horizontally: category names are often long ("Lucozade 4 x 380 ml"), and a row each keeps
+ * them readable on a phone. Every bar is labelled at its tip, so no axis is needed.
+ */
+function HorizontalBars({ chart }: { chart: ChartData }) {
+  const [hover, setHover] = useState<number | null>(null);
+  const max = Math.max(...chart.points.map((p) => p.value)) || 1;
+  return (
+    <ul className="mt-4 space-y-3" aria-label={`${chart.title}, ${chart.unit}`}>
+      {chart.points.map((p, i) => (
+        <li
+          key={p.label}
+          onMouseEnter={() => setHover(i)}
+          onMouseLeave={() => setHover(null)}
+          className="grid grid-cols-1 gap-1.5 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:items-center sm:gap-4"
+        >
+          <span className="text-[13px] leading-snug text-ink-2">{p.label}</span>
+          <span className="flex min-w-0 items-center gap-2">
+            <span className="block h-5 min-w-0 flex-1">
+              <span
+                className="block h-full rounded-r-[4px] bg-brand transition-opacity"
+                style={{ width: `${Math.max((p.value / max) * 100, p.value > 0 ? 1 : 0)}%`, opacity: hover === null || hover === i ? 1 : 0.45 }}
+              />
+            </span>
+            <span className="w-[4.5rem] shrink-0 text-right text-[13px] font-semibold tabular-nums text-ink">{withUnit(p.value, chart.unit)}</span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 /** Single-series bar or line chart. Values come only from the payload; nothing is computed or invented. */
 export function Chart({ chart, cite }: { chart: ChartData; cite?: React.ReactNode }) {
@@ -25,6 +64,7 @@ export function Chart({ chart, cite }: { chart: ChartData; cite?: React.ReactNod
   const titleId = useId();
 
   const values = chart.points.map((p) => p.value);
+  const horizontal = chart.type === "bar" && values.every((v) => v >= 0);
   const min = Math.min(0, ...values);
   const max = niceMax(Math.max(...values));
   const iw = W - PAD.left - PAD.right;
@@ -33,7 +73,7 @@ export function Chart({ chart, cite }: { chart: ChartData; cite?: React.ReactNod
   const band = iw / chart.points.length;
   const cx = (i: number) => PAD.left + band * i + band / 2;
   const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => min + (max - min) * t);
-  const barW = Math.min(56, band * 0.5);
+  const barW = Math.min(24, band * 0.5);
 
   return (
     <figure className="rounded-xl border border-line bg-surface p-4 sm:p-5" aria-labelledby={titleId}>
@@ -70,6 +110,8 @@ export function Chart({ chart, cite }: { chart: ChartData; cite?: React.ReactNod
             ))}
           </tbody>
         </table>
+      ) : horizontal ? (
+        <HorizontalBars chart={chart} />
       ) : (
         <div className="relative mt-3">
           <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={`${chart.title}, ${chart.unit}`}>

@@ -122,6 +122,8 @@ export function Showcase({ data }: { data: ShowcaseData }) {
 
   const ctx = { data, sections, presenting, goTo, sourceNumber };
   const current = presenting ? sections[slide] : active;
+  // Rendered as an element, not called as a function: a section's hooks must stay inside the section.
+  const CurrentSection = SECTION_COMPONENTS[current];
 
   return (
     <Ctx.Provider value={ctx}>
@@ -238,7 +240,7 @@ export function Showcase({ data }: { data: ShowcaseData }) {
           {presenting ? (
             <main className="mx-auto max-w-[1240px] px-4 pb-32 pt-10 sm:px-8 sm:pt-14">
               <div key={current} className="animate-[fadein_.35s_ease]">
-                {SECTION_COMPONENTS[current]()}
+                <CurrentSection />
               </div>
             </main>
           ) : (
