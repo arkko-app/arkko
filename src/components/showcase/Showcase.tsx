@@ -127,10 +127,10 @@ export function Showcase({ data }: { data: ShowcaseData }) {
 
   return (
     <Ctx.Provider value={ctx}>
-      <div className="flex min-h-screen bg-bg">
+      <div className="flex min-h-screen bg-bg print:bg-white">
         {/* Sidebar */}
         {!presenting && (
-          <aside className="sticky top-0 hidden h-screen w-[232px] shrink-0 flex-col border-r border-line bg-bg px-4 py-7 lg:flex">
+          <aside className="sticky top-0 hidden h-screen w-[232px] shrink-0 flex-col border-r border-line bg-bg px-4 py-7 lg:flex print:hidden">
             <div className="px-2">
               <Logo />
             </div>
@@ -176,8 +176,8 @@ export function Showcase({ data }: { data: ShowcaseData }) {
 
         <div className="min-w-0 flex-1">
           {/* Top bar */}
-          <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur">
-            <div className={`mx-auto flex h-16 items-center gap-3 px-4 sm:px-8 ${presenting ? "max-w-[1240px]" : "max-w-[1180px]"}`}>
+          <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur print:static print:bg-white print:backdrop-blur-none">
+            <div className={`mx-auto flex h-16 items-center gap-3 px-4 sm:px-8 print:h-10 print:px-0 ${presenting ? "max-w-[1240px]" : "max-w-[1180px]"}`}>
               <div className="flex min-w-0 flex-1 items-center gap-2 text-[13px]">
                 <span className="font-semibold tracking-wide text-ink">{payload.client.name.toUpperCase()}</span>
                 <span className="text-muted">/</span>
@@ -201,7 +201,7 @@ export function Showcase({ data }: { data: ShowcaseData }) {
                 <button
                   type="button"
                   onClick={startPresenting}
-                  className="hidden h-9 items-center gap-2 rounded-lg border border-line bg-surface px-3 text-[13px] font-semibold text-ink hover:border-line-strong sm:inline-flex"
+                  className="hidden h-9 items-center gap-2 rounded-lg border border-line bg-surface px-3 text-[13px] font-semibold text-ink hover:border-line-strong sm:inline-flex print:hidden"
                 >
                   <Icon name="monitor" size={14} /> Present
                 </button>
@@ -209,9 +209,8 @@ export function Showcase({ data }: { data: ShowcaseData }) {
               {payload.deliverables?.pdf && (
                 <a
                   href={payload.deliverables.pdf}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex h-9 items-center gap-2 rounded-lg bg-brand px-3 text-[13px] font-semibold text-brand-ink hover:bg-brand-hover"
+                  download
+                  className="inline-flex h-9 items-center gap-2 rounded-lg bg-brand px-3 text-[13px] font-semibold text-brand-ink hover:bg-brand-hover print:hidden"
                 >
                   <Icon name="download" size={14} />
                   <span className="hidden sm:inline">{payload.deliverables.pdfLabel ?? "Download brief"}</span>
@@ -220,7 +219,7 @@ export function Showcase({ data }: { data: ShowcaseData }) {
             </div>
             {/* Mobile section nav */}
             {!presenting && (
-              <nav className="flex gap-1 overflow-x-auto px-4 pb-3 lg:hidden" aria-label="Sections">
+              <nav className="flex gap-1 overflow-x-auto px-4 pb-3 lg:hidden print:hidden" aria-label="Sections">
                 {sections.map((id) => (
                   <button
                     key={id}
@@ -244,11 +243,12 @@ export function Showcase({ data }: { data: ShowcaseData }) {
               </div>
             </main>
           ) : (
-            <main className="mx-auto max-w-[1180px] space-y-20 px-4 pb-16 pt-8 sm:px-8 sm:pt-10">
-              {sections.map((id) => {
+            <main className="mx-auto max-w-[1180px] space-y-20 px-4 pb-16 pt-8 sm:px-8 sm:pt-10 print:space-y-12 print:px-0 print:pb-0 print:pt-6">
+              {sections.map((id, i) => {
                 const Section = SECTION_COMPONENTS[id];
                 return (
-                  <section key={id} id={`section-${id}`} className="scroll-mt-24">
+                  // In print (the results PDF), each section starts on a new page.
+                  <section key={id} id={`section-${id}`} className={`scroll-mt-24 ${i > 0 ? "print:break-before-page" : ""}`}>
                     <Section />
                   </section>
                 );

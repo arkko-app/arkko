@@ -1,14 +1,7 @@
 import { fail, json } from "@/lib/http";
-import { getRequest, newId, now, updateRequest, writeFile } from "@/lib/db";
+import { getRequest, updateRequest } from "@/lib/db";
 import { isOttoAuthorized } from "@/lib/otto";
-
-const TYPES: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/svg+xml": "svg",
-  "application/pdf": "pdf",
-};
+import { ASSET_TYPES, saveAsset } from "@/lib/assets";
 
 /**
  * Upload a result image or the final PDF (multipart field "file").
@@ -23,21 +16,12 @@ export async function POST(req: Request, ctx: RouteContext<"/api/otto/requests/[
   const form = await req.formData().catch(() => null);
   const file = form?.get("file");
   if (!(file instanceof File)) return fail(400, "No file received");
-  const ext = TYPES[file.type];
-  if (!ext) return fail(415, `Unsupported type ${file.type}`);
+  if (!ASSET_TYPES[file.type]) return fail(415, `Unsupported type ${file.type}`);
   if (file.size > 50 * 1024 * 1024) return fail(413, "Max 50 MB");
 
-  const name = `${newId("asset")}.${ext}`;
-  await writeFile(id, name, Buffer.from(await file.arrayBuffer()));
+  const asset = await saveAsset(id, file);
   await updateRequest(id, (r) => {
-    r.assets.push({
-      id: name,
-      name,
-      originalName: file.name.slice(0, 200),
-      contentType: file.type,
-      size: file.size,
-      uploadedAt: now(),
-    });
+    r.assets.push(asset);
   });
-  return json({ ref: `asset:${name}` }, 201);
+  return json({ ref: `asset:${asset.name}` }, 201);
 }

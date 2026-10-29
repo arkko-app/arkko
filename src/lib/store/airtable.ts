@@ -340,7 +340,7 @@ async function loadWhere(formula: string): Promise<Loaded | undefined> {
 /* Writing                                                              */
 /* ------------------------------------------------------------------ */
 
-/** Write the changes between `before` and `after`. Files and result versions are immutable once written. */
+/** Write the changes between `before` and `after`. Files are immutable once written. */
 async function persist(loaded: Loaded, before: RequestRecord, after: RequestRecord) {
   await patch(T.requests, [{ id: loaded.rowId, fields: requestFields(after, false) }]);
 
@@ -366,9 +366,17 @@ async function persist(loaded: Loaded, before: RequestRecord, after: RequestReco
     changed.map((v) => ({ id: loaded.reviewRows.get(v.id)!, fields: reviewFields(after, loaded.rowId, v) })),
   );
 
-  // Results versions
+  // Results versions: create new ones, update changed ones (a PDF added to a version)
+  const prevResults = new Map((before.results ?? []).map((v) => [v.version, JSON.stringify(v)]));
   const newResults = (after.results ?? []).filter((v) => !loaded.resultRows.has(v.version));
+  const changedResults = (after.results ?? []).filter(
+    (v) => loaded.resultRows.has(v.version) && prevResults.get(v.version) !== JSON.stringify(v),
+  );
   await create(T.results, newResults.map((v) => resultFields(after, loaded.rowId, v)));
+  await patch(
+    T.results,
+    changedResults.map((v) => ({ id: loaded.resultRows.get(v.version)!, fields: resultFields(after, loaded.rowId, v) })),
+  );
 }
 
 /** Attach a copy of the file to its Airtable row so people can see it in the base. Best effort. */

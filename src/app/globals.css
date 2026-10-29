@@ -72,8 +72,11 @@ body {
   text-transform: uppercase;
 }
 
-.link-arrow {
-  @apply inline-flex items-center gap-1 text-[13px] font-semibold text-brand-text hover:underline underline-offset-4;
+/* In the components layer so utilities such as `print:hidden` can override it. */
+@layer components {
+  .link-arrow {
+    @apply inline-flex items-center gap-1 text-[13px] font-semibold text-brand-text hover:underline underline-offset-4;
+  }
 }
 
 /* In the base layer so utilities like `outline-none` can override it (unlayered CSS beats every layer). */
@@ -92,6 +95,22 @@ body {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Results PDF (made by Otto from the results page) and the browser's own Print. */
+@page {
+  size: A4;
+  margin: 14mm 12mm 16mm;
+}
+@media print {
+  /* White paper: the cream page colour would stop at the page margins. */
+  body {
+    background: #fff;
+  }
+  html {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 }
 

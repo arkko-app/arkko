@@ -22,7 +22,7 @@ export const SECTION_META: Record<SectionId, { label: string; icon: IconName; ey
 function SectionHeader({ id }: { id: SectionId }) {
   const m = SECTION_META[id];
   return (
-    <header className="mb-6">
+    <header className="mb-6 break-inside-avoid break-after-avoid">
       <div className="eyebrow text-brand-text">{m.eyebrow}</div>
       <h2 className="mt-2 font-serif text-[28px] font-bold leading-tight tracking-tight text-ink sm:text-[34px]">
         {m.title}
@@ -90,7 +90,7 @@ function NavLink({ to, children }: { to: SectionId; children: ReactNode }) {
   const { goTo, sections } = useShowcase();
   if (!sections.includes(to)) return null;
   return (
-    <button type="button" onClick={() => goTo(to)} className="link-arrow">
+    <button type="button" onClick={() => goTo(to)} className="link-arrow print:hidden">
       {children} <Icon name="arrowRight" size={13} />
     </button>
   );
@@ -118,7 +118,7 @@ export function Overview() {
       <div className={`mt-7 grid gap-4 ${concept.image && rows.length ? "lg:grid-cols-[1.35fr_1fr]" : ""}`}>
         {concept.image && <Img image={concept.image} className="aspect-[16/9] lg:aspect-auto lg:min-h-[340px]" />}
         {rows.length > 0 && (
-          <div className="flex flex-col rounded-2xl border border-line bg-surface p-6 sm:p-7">
+          <div className="flex break-inside-avoid flex-col rounded-2xl border border-line bg-surface p-6 sm:p-7">
             <div className="eyebrow text-ink-2">The opportunity</div>
             <dl className="mt-4 divide-y divide-line">
               {rows.map((r) => (
@@ -143,7 +143,7 @@ export function Overview() {
       {pillars && pillars.length > 0 && (
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           {pillars.map((p, i) => (
-            <div key={p.label} className="rounded-2xl border border-line bg-surface p-5">
+            <div key={p.label} className="break-inside-avoid rounded-2xl border border-line bg-surface p-5">
               <div className="eyebrow text-[10px] text-ink-2">{p.label}</div>
               <div className="mt-2 font-serif text-[19px] font-semibold text-ink">{p.title}</div>
               <div className="mt-3 flex items-center justify-between gap-2">
@@ -164,7 +164,7 @@ function NextToValidate() {
   const { data } = useShowcase();
   const t = data.payload.nextTest!;
   return (
-    <div className="mt-4 flex flex-col gap-2 rounded-xl border border-accent-line bg-accent-soft px-5 py-4 sm:flex-row sm:items-center sm:gap-6">
+    <div className="mt-4 flex break-inside-avoid flex-col gap-2 rounded-xl border border-accent-line bg-accent-soft px-5 py-4 sm:flex-row sm:items-center sm:gap-6">
       <div className="eyebrow shrink-0 text-[10px] text-accent-text">Next to validate</div>
       <div className="flex-1 text-[16px] font-medium text-ink">{t.question}</div>
       <NavLink to="risks">View next test</NavLink>
@@ -182,7 +182,7 @@ export function Brief() {
     <div>
       <SectionHeader id="brief" />
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border border-line bg-surface p-6">
+        <div className="break-inside-avoid rounded-2xl border border-line bg-surface p-6">
           <div className="eyebrow text-ink-2">What you asked for</div>
           {brief?.summary && <p className="mt-3 text-[15px] leading-relaxed text-ink-2">{brief.summary}</p>}
           {brief?.quotes?.map((q) => (
@@ -198,7 +198,7 @@ export function Brief() {
             </div>
           )}
         </div>
-        <div className="rounded-2xl border border-brand/20 bg-brand-soft/50 p-6">
+        <div className="break-inside-avoid rounded-2xl border border-brand/20 bg-brand-soft/50 p-6">
           <div className="eyebrow text-brand-text">What it became</div>
           <div className="mt-3 font-serif text-[26px] font-bold text-ink">{concept.name}</div>
           <p className="mt-1 text-[15px] text-ink-2">{concept.proposition}</p>
@@ -229,7 +229,7 @@ function FindingCard({ f }: { f: Finding }) {
   const [open, setOpen] = useState(false);
   const chart = f.chartId ? data.payload.charts?.find((c) => c.id === f.chartId) : undefined;
   return (
-    <div className={`rounded-2xl border bg-surface p-5 ${f.kind === "assumption" ? "border-dashed border-line-strong" : "border-line"}`}>
+    <div className={`break-inside-avoid rounded-2xl border bg-surface p-5 ${f.kind === "assumption" ? "border-dashed border-line-strong" : "border-line"}`}>
       <div className="flex flex-wrap items-center gap-2">
         <KindChip kind={f.kind} />
         <SourceRefs ids={f.sourceIds} />
@@ -248,12 +248,13 @@ function FindingCard({ f }: { f: Finding }) {
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
-            className="mt-3 inline-flex items-center gap-1 text-[13px] font-semibold text-brand-text"
+            className="mt-3 inline-flex items-center gap-1 text-[13px] font-semibold text-brand-text print:hidden"
           >
             {open ? "Hide detail" : "Show detail"}
             <Icon name="chevronDown" size={14} className={open ? "rotate-180" : ""} />
           </button>
-          {open && <p className="mt-3 text-sm leading-relaxed text-ink-2">{f.detail}</p>}
+          {/* Always in print: a PDF has no toggles. */}
+          <p className={`mt-3 text-sm leading-relaxed text-ink-2 ${open ? "" : "hidden print:block"}`}>{f.detail}</p>
         </>
       )}
     </div>
@@ -268,7 +269,7 @@ export function Opportunity() {
   return (
     <div>
       <SectionHeader id="opportunity" />
-      <div className="mb-5 flex flex-wrap items-center gap-2 text-xs text-muted">
+      <div className="mb-5 flex break-after-avoid flex-wrap items-center gap-2 text-xs text-muted">
         <span>How to read this:</span>
         <KindChip kind="sourced" />
         <KindChip kind="interpretation" />
@@ -300,8 +301,8 @@ export function Landscape() {
     <div>
       <SectionHeader id="landscape" />
       {l.summary && <p className="mb-5 max-w-3xl text-[15px] leading-relaxed text-ink-2">{l.summary}</p>}
-      <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
-        <table className="w-full min-w-[640px] text-left text-sm">
+      <div className="overflow-x-auto rounded-2xl border border-line bg-surface print:overflow-visible">
+        <table className="w-full min-w-[640px] text-left text-sm print:min-w-0">
           <thead>
             <tr className="border-b border-line">
               <th className="px-5 py-3.5 eyebrow text-[10px] font-semibold text-ink-2">Product</th>
@@ -314,7 +315,7 @@ export function Landscape() {
             {l.competitors.map((c) => {
               const ours = c.name === conceptName;
               return (
-                <tr key={c.name} className={`border-b border-line last:border-0 ${ours ? "bg-brand-soft/60" : ""}`}>
+                <tr key={c.name} className={`break-inside-avoid border-b border-line last:border-0 ${ours ? "bg-brand-soft/60" : ""}`}>
                   <td className="px-5 py-4 align-top">
                     <div className="flex items-center gap-3">
                       {c.image && (
@@ -354,7 +355,7 @@ export function Risks() {
     <div>
       <SectionHeader id="risks" />
       {nextTest && (
-        <div className="mb-5 rounded-2xl border border-accent-line bg-accent-soft p-6">
+        <div className="mb-5 break-inside-avoid rounded-2xl border border-accent-line bg-accent-soft p-6">
           <div className="eyebrow text-[10px] text-accent-text">Next to validate</div>
           <div className="mt-2 font-serif text-[24px] font-bold text-ink">{nextTest.question}</div>
           {nextTest.method && <p className="mt-2 text-[15px] text-ink-2">{nextTest.method}</p>}
@@ -363,7 +364,7 @@ export function Risks() {
       {risks && risks.length > 0 && (
         <div className="divide-y divide-line rounded-2xl border border-line bg-surface">
           {risks.map((r) => (
-            <div key={r.id} className="grid gap-3 p-5 md:grid-cols-[1fr_1fr] md:gap-8">
+            <div key={r.id} className="grid break-inside-avoid gap-3 p-5 md:grid-cols-[1fr_1fr] md:gap-8">
               <div>
                 <Chip tone={r.kind === "risk" ? "accent" : "dashed"}>{RISK_LABEL[r.kind]}</Chip>
                 <p className="mt-2 text-[16px] font-medium text-ink">{r.statement}</p>
@@ -390,11 +391,11 @@ export function Evidence() {
   return (
     <div>
       <SectionHeader id="evidence" />
-      <div className={`grid gap-4 ${deliverables?.pdf || data.access ? "lg:grid-cols-[1.6fr_1fr]" : ""}`}>
+      <div className={`grid gap-4 ${deliverables?.pdf || data.access ? "lg:grid-cols-[1.6fr_1fr] print:grid-cols-1" : ""}`}>
         {sources && sources.length > 0 && (
           <ol className="divide-y divide-line rounded-2xl border border-line bg-surface">
             {sources.map((s, i) => (
-              <li key={s.id} id={`source-${s.id}`} className="flex scroll-mt-24 gap-4 p-5 target:bg-accent-soft">
+              <li key={s.id} id={`source-${s.id}`} className="flex break-inside-avoid scroll-mt-24 gap-4 p-5 target:bg-accent-soft">
                 <span className="grid size-7 shrink-0 place-items-center rounded-md border border-line text-xs font-semibold text-brand-text">
                   {i + 1}
                 </span>
@@ -416,7 +417,7 @@ export function Evidence() {
             ))}
           </ol>
         )}
-        <div className="space-y-4">
+        <div className="space-y-4 print:hidden">
         {deliverables?.pdf && (
           <div className="flex flex-col rounded-2xl border border-line bg-surface p-6">
             <span className="grid size-11 place-items-center rounded-xl bg-brand-soft text-brand-text">
@@ -424,12 +425,11 @@ export function Evidence() {
             </span>
             <div className="mt-4 font-serif text-[20px] font-semibold text-ink">The full brief</div>
             <p className="mt-1 text-sm text-ink-2">
-              The PDF has the presentation and reference pages, with every source linked.
+              A copy of these results to keep and share, with every source linked.
             </p>
             <a
               href={deliverables.pdf}
-              target="_blank"
-              rel="noreferrer"
+              download
               className="mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-brand px-4 text-sm font-semibold text-brand-ink hover:bg-brand-hover"
             >
               <Icon name="download" size={15} /> {deliverables.pdfLabel ?? "Download PDF"}

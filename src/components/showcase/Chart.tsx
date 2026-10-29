@@ -76,7 +76,7 @@ export function Chart({ chart, cite }: { chart: ChartData; cite?: React.ReactNod
   const barW = Math.min(24, band * 0.5);
 
   return (
-    <figure className="rounded-xl border border-line bg-surface p-4 sm:p-5" aria-labelledby={titleId}>
+    <figure className="break-inside-avoid rounded-xl border border-line bg-surface p-4 sm:p-5" aria-labelledby={titleId}>
       <div className="flex items-start justify-between gap-3">
         <figcaption>
           <div id={titleId} className="text-[15px] font-semibold text-ink">{chart.title}</div>
@@ -85,7 +85,7 @@ export function Chart({ chart, cite }: { chart: ChartData; cite?: React.ReactNod
         <button
           type="button"
           onClick={() => setAsTable((v) => !v)}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-ink-2 hover:bg-surface-2"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-ink-2 hover:bg-surface-2 print:hidden"
           aria-pressed={asTable}
         >
           <Icon name={asTable ? "chart" : "table"} size={13} />

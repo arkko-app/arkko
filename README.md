@@ -108,6 +108,7 @@ Every call needs `Authorization: Bearer $OTTO_API_KEY`.
 | POST | `/api/otto/requests/:id/events` | Log `research_started`, `final_email_sent`, or `error` |
 | POST | `/api/otto/requests/:id/assets` | Upload a result image or the final PDF (multipart `file`) → `{ ref: "asset:…" }` |
 | PUT | `/api/otto/requests/:id/results` | Publish structured results (contract: `src/lib/types.ts` `ResultsPayload`). Each PUT creates a new version; the latest one is shown |
+| PUT | `/api/otto/requests/:id/results/pdf` | Attach the PDF of a results version (multipart `file`, `version`; max 4 MB). Shows the Download PDF button |
 
 Push mode: when `OTTO_WEBHOOK_URL` is set, new requests (`request.submitted`) and every notification
 (`review.decided`, `results_email.requested`) are also POSTed there, signed with `x-arkko-signature`
