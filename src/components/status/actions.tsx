@@ -173,7 +173,7 @@ export function ReviewDecision({ token, reviewId, stage }: { token: string; revi
           <label htmlFor="feedback" className="block text-[15px] font-medium text-ink">
             What should change?
           </label>
-          <p className="mt-0.5 text-sm text-muted">Be as specific as you like. Otto will send a new version here.</p>
+          <p className="mt-0.5 text-sm text-muted">Be as specific as you like. We’ll send a new version here.</p>
           <textarea
             id="feedback"
             rows={4}

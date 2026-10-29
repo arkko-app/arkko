@@ -9,6 +9,9 @@ export function buildShowcaseData(rec: RequestRecord) {
   const img = (i?: ResultImage) => (i ? { ...i, src: resolve(i.src) } : undefined);
 
   const p = structuredClone(latest.payload) as ResultsPayload;
+  // Results published before 2026-10-29 name an "AI specialist team"; show them in the current wording.
+  if (p.project.stage === "Desk research · AI specialist team") p.project.stage = "Desk research · Specialist team";
+  p.disclaimer = p.disclaimer?.replace("Arkko's AI specialist team", "Arkko's specialist research team");
   p.concept.image = img(p.concept.image);
   if (p.deliverables?.pdf) p.deliverables.pdf = resolve(p.deliverables.pdf);
   if (p.brief?.images) p.brief.images = p.brief.images.map((i) => img(i)!);

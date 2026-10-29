@@ -149,7 +149,7 @@ export const velaResults: ResultsPayload = {
   sources: [
     { id: "s1", title: "Afternoon drinking occasions survey (illustrative)", publisher: "Fictional research panel", accessed: "2026-10-12" },
     { id: "s2", title: "Energy-drink lapse reasons tracker (illustrative)", publisher: "Fictional category report", accessed: "2026-10-12" },
-    { id: "s3", title: "Functional beverage shelf and claims audit (illustrative)", publisher: "Otto desk research (fictional)", accessed: "2026-10-13" },
+    { id: "s3", title: "Functional beverage shelf and claims audit (illustrative)", publisher: "Arkko desk research (fictional)", accessed: "2026-10-13" },
   ],
   deliverables: { pdf: "/demo/vela-brief.pdf", pdfLabel: "Download brief" },
   disclaimer: "Illustrative demo · Findings and concepts are fictional",

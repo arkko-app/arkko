@@ -47,7 +47,7 @@ function Img({ image, className = "" }: { image: ResultImage; className?: string
 
 const KIND: Record<ClaimKind, { label: string; tone: "brand" | "outline" | "dashed"; icon: IconName }> = {
   sourced: { label: "Sourced finding", tone: "brand", icon: "check" },
-  interpretation: { label: "Otto's interpretation", tone: "outline", icon: "bulb" },
+  interpretation: { label: "Our interpretation", tone: "outline", icon: "bulb" },
   assumption: { label: "Assumption to validate", tone: "dashed", icon: "flag" },
 };
 

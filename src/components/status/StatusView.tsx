@@ -9,7 +9,7 @@ import { ResearchProgress } from "./ResearchProgress";
 const COPY: Record<string, { title: string; body: string }> = {
   "idea:developing": {
     title: "We're shaping your idea.",
-    body: "Otto is turning your brief into a first idea. It will appear on this page for you to review.",
+    body: "We’re turning your brief into a first idea. It will appear on this page for you to review.",
   },
   "idea:awaiting_review": {
     title: "Your idea is ready for review.",
@@ -21,7 +21,7 @@ const COPY: Record<string, { title: string; body: string }> = {
   },
   "concept:developing": {
     title: "Idea approved. Building the concept.",
-    body: "Otto is developing your idea into a full concept. It will appear here for you to review.",
+    body: "We’re developing your idea into a full concept. It will appear here for you to review.",
   },
   "concept:awaiting_review": {
     title: "Your concept is ready for review.",
@@ -33,7 +33,7 @@ const COPY: Record<string, { title: string; body: string }> = {
   },
   "research:developing": {
     title: "Concept approved. Research is underway.",
-    body: "Otto is researching the opportunity. It usually takes about 10 minutes, and your results page will be ready here when it's done.",
+    body: "We’re researching the opportunity. It usually takes about 10 minutes, and your results page will be ready here when it's done.",
   },
   "brief:research": {
     title: "We're researching your brief.",
