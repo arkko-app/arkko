@@ -317,12 +317,12 @@ function VersionNote({ data }: { data: ShowcaseData }) {
   const older = data.version < v.newest;
   return (
     <div
-      className={`-mb-12 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border px-5 py-3.5 text-[14px] print:hidden ${
+      className={`mb-10 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border px-5 py-3.5 text-[14px] print:hidden ${
         older ? "border-accent-line bg-accent-soft text-ink" : "border-line bg-surface text-ink-2"
       }`}
     >
       <Icon name={older ? "clock" : "refresh"} size={15} className="shrink-0" />
-      <span className="flex-1">
+      <span className="min-w-[220px] flex-1">
         {older ? (
           <>
             You’re viewing an earlier version: <b className="text-ink">version {data.version}</b>.
