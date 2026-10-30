@@ -17,6 +17,8 @@ export const site = {
       { href: "#get", label: "What you get" },
       { href: "#how", label: "How it works" },
       { href: "#example", label: "Example" },
+      // Preview of the proposed plans, linked for the meeting with Pedro; prices are not final.
+      { href: "/preview/pricing", label: "Pricing" },
     ],
     hero: {
       eyebrow: "Your AI-powered innovation partner",
