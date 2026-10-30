@@ -7,6 +7,8 @@ export interface ShowcaseData {
   /** Present on a real request's page; absent in previews. */
   access?: { token: string; email?: string; emailSent: boolean; canRevise: boolean };
   payload: ResultsPayload; // asset: refs already resolved to URLs
+  /** Present on a real request's page: which version this is among the request's results. */
+  versions?: { newest: number; previous?: number; changed?: string[] };
   briefImages: ResultImage[];
   version: number;
   updatedAt: string;

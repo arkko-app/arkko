@@ -15,20 +15,21 @@ export const metadata: Metadata = {
   referrer: "no-referrer",
 };
 
-async function Results({ params }: { params: Promise<{ token: string }> }) {
+async function Results({ params, searchParams }: PageProps<"/r/[token]">) {
   await connection();
   const { token } = await params;
+  const { v } = await searchParams;
   const rec = await getByResultsToken(token);
   if (!rec || rec.status === "draft") notFound();
   // Until results exist, and while an edited brief is researched again, the results link shows the request's status.
   if (currentStage(rec).phase !== "results") return <StatusView rec={withResolvedReviewImages(rec)} token={token} />;
-  return <Showcase data={buildShowcaseData(rec)} />;
+  return <Showcase data={buildShowcaseData(rec, Number(v) || undefined)} />;
 }
 
-export default function Page({ params }: PageProps<"/r/[token]">) {
+export default function Page({ params, searchParams }: PageProps<"/r/[token]">) {
   return (
     <Suspense fallback={<PageSkeleton variant="request" />}>
-      <Results params={params} />
+      <Results params={params} searchParams={searchParams} />
     </Suspense>
   );
 }

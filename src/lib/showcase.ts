@@ -1,11 +1,15 @@
 import "server-only";
-import { canRevise } from "./revise";
+import { canRevise, changesBehind } from "./revise";
 import { signedFileUrl } from "./sign";
 import type { RequestRecord, ResultImage, ResultsPayload } from "./types";
 
-/** Turn `asset:<name>` refs into signed URLs and pick the intake images to show. */
-export function buildShowcaseData(rec: RequestRecord) {
-  const latest = rec.results!.at(-1)!;
+/**
+ * Turn `asset:<name>` refs into signed URLs and pick the intake images to show. Shows the latest results version,
+ * or an earlier one when asked for (it falls back to the latest when that version doesn't exist).
+ */
+export function buildShowcaseData(rec: RequestRecord, version?: number) {
+  const newest = rec.results!.at(-1)!;
+  const latest = rec.results!.find((v) => v.version === version) ?? newest;
   const resolve = (src: string) => (src.startsWith("asset:") ? signedFileUrl(rec.id, src.slice(6)) : src);
   const img = (i?: ResultImage) => (i ? { ...i, src: resolve(i.src) } : undefined);
 
@@ -28,7 +32,13 @@ export function buildShowcaseData(rec: RequestRecord) {
       token: rec.resultsToken,
       email: rec.email,
       emailSent: rec.events.some((e) => e.type === "final_email_sent"),
-      canRevise: canRevise(rec),
+      canRevise: latest === newest && canRevise(rec),
+    },
+    versions: {
+      newest: newest.version,
+      /** The previous version's number, when there is one to look back at. */
+      previous: rec.results!.filter((v) => v.version < latest.version).at(-1)?.version,
+      changed: changesBehind(rec, latest.version),
     },
     payload: p,
     briefImages: p.brief?.images ?? intakeImages,

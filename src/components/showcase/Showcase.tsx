@@ -252,6 +252,7 @@ export function Showcase({ data }: { data: ShowcaseData }) {
             </main>
           ) : (
             <main className="mx-auto max-w-[1180px] space-y-20 px-4 pb-16 pt-8 sm:px-8 sm:pt-10 print:space-y-12 print:px-0 print:pb-0 print:pt-6">
+              <VersionNote data={data} />
               {sections.map((id, i) => {
                 const Section = SECTION_COMPONENTS[id];
                 return (
@@ -305,5 +306,45 @@ export function Showcase({ data }: { data: ShowcaseData }) {
         </div>
       </div>
     </Ctx.Provider>
+  );
+}
+
+/** Which results version this is: after an edit, what changed and a way to the version before; on an older one, the way back. */
+function VersionNote({ data }: { data: ShowcaseData }) {
+  const v = data.versions;
+  const token = data.access?.token;
+  if (!v || !token || (data.version === v.newest && !v.changed)) return null;
+  const older = data.version < v.newest;
+  return (
+    <div
+      className={`-mb-12 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border px-5 py-3.5 text-[14px] print:hidden ${
+        older ? "border-accent-line bg-accent-soft text-ink" : "border-line bg-surface text-ink-2"
+      }`}
+    >
+      <Icon name={older ? "clock" : "refresh"} size={15} className="shrink-0" />
+      <span className="flex-1">
+        {older ? (
+          <>
+            You’re viewing an earlier version: <b className="text-ink">version {data.version}</b>.
+          </>
+        ) : (
+          <>
+            <b className="text-ink">Version {data.version}</b>, updated after your edit
+            {v.changed?.length ? <>. You changed: {v.changed.join(", ")}.</> : "."}
+          </>
+        )}
+      </span>
+      {older ? (
+        <Link href={`/r/${token}`} className="font-semibold text-ink underline underline-offset-4">
+          Back to the latest
+        </Link>
+      ) : (
+        v.previous && (
+          <Link href={`/r/${token}?v=${v.previous}`} className="font-semibold text-ink underline underline-offset-4">
+            See the previous version
+          </Link>
+        )
+      )}
+    </div>
   );
 }

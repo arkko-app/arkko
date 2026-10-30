@@ -19,3 +19,27 @@ export function revisionPending(r: Events) {
  */
 export const canRevise = (r: Pick<RequestRecord, "events" | "results" | "reviews">) =>
   !!r.results?.length && !r.reviews.length && !revisionPending(r) && revisionsUsed(r) < MAX_BRIEF_REVISIONS;
+
+/** Short names for the brief's answers, for "You changed: …". */
+const FIELD_NAMES: Record<string, string> = {
+  brand: "Brand",
+  goal: "Goal",
+  product: "Product",
+  audience: "Audience",
+  occasion: "Occasion",
+  market: "Market",
+  channels: "Channels",
+  price: "Price",
+  ideas: "Early ideas",
+  constraints: "Constraints",
+};
+
+/** The answers the customer changed in the edit that led to this results version, if it came from an edit. */
+export function changesBehind(r: Events, version: number) {
+  const published = r.events.findIndex((e) => e.type === "results_published" && e.version === version);
+  if (published < 0) return undefined;
+  const previous = r.events.slice(0, published).findLastIndex((e) => e.type === "results_published");
+  const edit = r.events.slice(previous + 1, published).findLast((e) => e.type === "brief_revised");
+  if (!edit) return undefined;
+  return ((edit.data?.changed as string[] | undefined) ?? []).map((id) => FIELD_NAMES[id] ?? id);
+}
