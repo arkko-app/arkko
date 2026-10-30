@@ -1,0 +1,40 @@
+/** Proposed subscription plans, shown on the preview pages until Pedro agrees the prices. */
+export const plans = [
+  {
+    id: "free",
+    name: "Free trial",
+    price: "$0",
+    per: "",
+    pitch: "One brief to see Arkko on your own idea.",
+    features: ["1 brief per company", "Full results page", "Download the PDF"],
+    cta: "Start free",
+  },
+  {
+    id: "single",
+    name: "Single brief",
+    price: "$49",
+    per: "/ brief",
+    pitch: "For founders with one idea to check.",
+    features: ["Pay only when you need it", "Results page and PDF", "Results by email"],
+    cta: "Buy a brief",
+  },
+  {
+    id: "starter",
+    name: "Starter",
+    price: "$149",
+    per: "/ month",
+    pitch: "For teams testing ideas every month.",
+    features: ["5 briefs a month", "All briefs in one account", "Results page, PDF and email"],
+    cta: "Choose Starter",
+    featured: true,
+  },
+  {
+    id: "team",
+    name: "Team",
+    price: "$399",
+    per: "/ month",
+    pitch: "For innovation teams with a pipeline of ideas.",
+    features: ["20 briefs a month", "Up to 5 team members", "Shared briefs and results"],
+    cta: "Choose Team",
+  },
+] as const;
