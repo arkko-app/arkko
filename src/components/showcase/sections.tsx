@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import Link from "next/link";
 import type { ClaimKind, Finding, ResultImage, SectionId } from "@/lib/types";
 import { Icon, type IconName } from "../icons";
 import { Chip } from "../ui";
@@ -446,6 +447,20 @@ export function Evidence() {
               sent={data.access.emailSent}
               resultsReady
             />
+          </div>
+        )}
+        {data.access?.canRevise && (
+          <div className="rounded-2xl border border-line bg-surface p-6">
+            <div className="font-serif text-[18px] font-semibold text-ink">Change something in your brief?</div>
+            <p className="mt-1 text-sm text-ink-2">
+              You can edit your brief once. We’ll research it again, and the new results replace these in about 5 minutes.
+            </p>
+            <Link
+              href={`/r/${data.access.token}/edit`}
+              className="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-lg border-[1.5px] border-ink bg-surface px-4 text-sm font-semibold text-ink"
+            >
+              <Icon name="refresh" size={15} /> Edit brief
+            </Link>
           </div>
         )}
         </div>

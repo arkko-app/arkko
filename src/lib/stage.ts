@@ -1,3 +1,4 @@
+import { revisionPending } from "./revise";
 import type { RequestRecord, Review, ReviewStage } from "./types";
 
 export type Phase = "idea" | "concept" | "research" | "results";
@@ -33,8 +34,9 @@ function reviewState(r: Pick<RequestRecord, "reviews">, stage: ReviewStage): Sta
 }
 
 /** Where a request is, derived only from what has actually been recorded. */
-export function currentStage(r: Pick<RequestRecord, "reviews" | "results">): Stage {
-  if (r.results?.length) return { phase: "results", state: "done" };
+export function currentStage(r: Pick<RequestRecord, "reviews" | "results" | "events">): Stage {
+  // An edited brief goes back to research until its new results are published.
+  if (r.results?.length && !revisionPending(r)) return { phase: "results", state: "done" };
   // Without idea or concept versions, the brief goes straight to research (the coordinator turns it into the research brief).
   if (!r.reviews.length) return { phase: "research", state: "developing" };
   if (!isApproved(r, "idea")) return reviewState(r, "idea");

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { getByResultsToken } from "@/lib/db";
 import { buildShowcaseData, withResolvedReviewImages } from "@/lib/showcase";
+import { currentStage } from "@/lib/stage";
 import { Showcase } from "@/components/showcase/Showcase";
 import { StatusView } from "@/components/status/StatusView";
 import { PageSkeleton } from "@/components/PageSkeleton";
@@ -19,8 +20,8 @@ async function Results({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   const rec = await getByResultsToken(token);
   if (!rec || rec.status === "draft") notFound();
-  // Until results exist, the results link shows the request's status instead.
-  if (!rec.results?.length) return <StatusView rec={withResolvedReviewImages(rec)} token={token} />;
+  // Until results exist, and while an edited brief is researched again, the results link shows the request's status.
+  if (currentStage(rec).phase !== "results") return <StatusView rec={withResolvedReviewImages(rec)} token={token} />;
   return <Showcase data={buildShowcaseData(rec)} />;
 }
 

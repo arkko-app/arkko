@@ -1,4 +1,5 @@
 import "server-only";
+import { canRevise } from "./revise";
 import { signedFileUrl } from "./sign";
 import type { RequestRecord, ResultImage, ResultsPayload } from "./types";
 
@@ -27,6 +28,7 @@ export function buildShowcaseData(rec: RequestRecord) {
       token: rec.resultsToken,
       email: rec.email,
       emailSent: rec.events.some((e) => e.type === "final_email_sent"),
+      canRevise: canRevise(rec),
     },
     payload: p,
     briefImages: p.brief?.images ?? intakeImages,

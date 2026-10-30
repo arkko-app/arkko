@@ -117,6 +117,10 @@ the user, who can retry without creating a duplicate. Notifications stay in the 
 
 Log `final_email_sent` after emailing the results, so the status page shows they were sent.
 
+Edited briefs: once the results are ready, the customer can edit a brief once (results page → Edit brief). The edit
+puts the request back in the queue as `submitted`, sets `revisedAt`, and logs a `brief_revised` event whose data lists
+the changed fields and their old answers. Research it again as usual; its results become the next version.
+
 Results validation rejects payloads where a "sourced" finding cites no source, a chart has no source, a source ID is unknown, or an `asset:` reference was never uploaded. Sections with no content are hidden, never filled with placeholders.
 
 To see example payloads, look at `src/lib/seed.ts`.

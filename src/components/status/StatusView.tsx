@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { revisionPending } from "@/lib/revise";
 import { currentStage, isApproved, reviewsFor, type Phase, type Stage } from "@/lib/stage";
 import type { RequestRecord, Review } from "@/lib/types";
 import { Icon, type IconName } from "../icons";
@@ -39,6 +40,10 @@ const COPY: Record<string, { title: string; body: string }> = {
     title: "We're researching your brief.",
     body: "Arkko's research team is looking into the market, consumers and feasibility, then scoring the opportunity. It usually takes about 10 minutes.",
   },
+  "brief:revised": {
+    title: "We're researching your edited brief.",
+    body: "Arkko's research team is looking at your brief again with your changes. Your new results will be ready here in about 5 minutes.",
+  },
   "results:done": {
     title: "Your results are ready.",
     body: "Explore the concept, the evidence behind it, and what to test next.",
@@ -76,7 +81,14 @@ export function StatusView({ rec, token }: { rec: RequestRecord; token: string }
   // A brief researched directly, with no idea or concept rounds, skips those steps in the progress list.
   const direct = rec.reviews.length === 0;
   const phases = direct ? PHASES.filter((p) => p.id !== "idea" && p.id !== "concept") : PHASES;
-  const copy = COPY[direct && stage.phase === "research" ? "brief:research" : `${stage.phase}:${stage.state}`];
+  const copy =
+    COPY[
+      direct && stage.phase === "research"
+        ? revisionPending(rec)
+          ? "brief:revised"
+          : "brief:research"
+        : `${stage.phase}:${stage.state}`
+    ];
   const brand = rec.answers.brand ?? "Your brief";
   const statusPath = `/r/${token}/status`;
   const sent = rec.events.some((e) => e.type === "final_email_sent");

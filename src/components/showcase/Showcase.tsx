@@ -189,6 +189,14 @@ export function Showcase({ data }: { data: ShowcaseData }) {
                   {payload.project.stage}
                 </span>
               )}
+              {!presenting && data.access?.canRevise && (
+                <Link
+                  href={`/r/${data.access.token}/edit`}
+                  className="hidden h-9 items-center gap-2 rounded-lg border border-line bg-surface px-3 text-[13px] font-semibold text-ink hover:border-line-strong sm:inline-flex print:hidden"
+                >
+                  <Icon name="refresh" size={14} /> Edit brief
+                </Link>
+              )}
               {presenting ? (
                 <button
                   type="button"

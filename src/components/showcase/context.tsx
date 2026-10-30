@@ -5,7 +5,7 @@ import type { ResultImage, ResultsPayload, SectionId } from "@/lib/types";
 
 export interface ShowcaseData {
   /** Present on a real request's page; absent in previews. */
-  access?: { token: string; email?: string; emailSent: boolean };
+  access?: { token: string; email?: string; emailSent: boolean; canRevise: boolean };
   payload: ResultsPayload; // asset: refs already resolved to URLs
   briefImages: ResultImage[];
   version: number;

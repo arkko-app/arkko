@@ -51,9 +51,11 @@ export interface ResearchProgress {
 
 /** Where the latest research run is, from the request's recorded events only. */
 export function researchProgress(rec: Pick<RequestRecord, "events">): ResearchProgress {
+  // An edited brief starts afresh: its research and retries count from the edit.
+  const events = rec.events.slice(rec.events.findLastIndex((e) => e.type === "brief_revised") + 1);
   // Only the latest run counts: a rerun starts again from a new research_started event.
-  const start = rec.events.findLastIndex((e) => e.type === "research_started");
-  const run = start >= 0 ? rec.events.slice(start) : [];
+  const start = events.findLastIndex((e) => e.type === "research_started");
+  const run = start >= 0 ? events.slice(start) : [];
   const done = new Set(run.filter((e) => e.type === "research_progress").map((e) => e.data?.step as string));
   const failed = start >= 0 && run.some((e) => e.type === "error");
 
@@ -69,7 +71,7 @@ export function researchProgress(rec: Pick<RequestRecord, "events">): ResearchPr
   // Each run ends at its first error; runs stopped by an account problem don't count.
   let runs = 0;
   let open = false;
-  for (const e of rec.events) {
+  for (const e of events) {
     if (e.type === "research_started") {
       runs++;
       open = true;
@@ -81,7 +83,7 @@ export function researchProgress(rec: Pick<RequestRecord, "events">): ResearchPr
   const paused = failed && run.some(isAccountError);
   return {
     state: start < 0 ? "queued" : failed ? "failed" : "running",
-    startedAt: start >= 0 ? rec.events[start].at : undefined,
+    startedAt: start >= 0 ? events[start].at : undefined,
     willRetry: failed && (paused || runs < RESEARCH_MAX_RUNS),
     paused,
     steps,

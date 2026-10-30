@@ -13,6 +13,8 @@ export function intakeForOtto(r: RequestRecord) {
     status: r.status,
     stage: currentStage(r),
     submittedAt: r.submittedAt,
+    /** When the user last edited the brief after its results; new research is due. */
+    revisedAt: r.events.findLast((e) => e.type === "brief_revised")?.at ?? null,
     answers: r.answers,
     /** The intake conversation, when the brief was given by chat (readable text), otherwise null. */
     chatTranscript: r.chatTranscript ?? null,
